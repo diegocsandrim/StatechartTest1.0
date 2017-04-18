@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <Statechart id="_C7EcYLrxEea1MdTc6sJwSA" specification="interface:&#xA;// Define events and&#xA;// and variables here&#xA;in event turnOn&#xA;in event turnOff&#xA;in event cancel&#xA;in event cardInserted&#xA;in event choose_transaction&#xA;in event checksum&#xA;in event deny&#xA;in event confirm&#xA;in event end_transaction&#xA;in event excertion_cardMoney&#xA;in event service_failure&#xA;in event report_sent&#xA;var valid:boolean&#xA;var newBalance:integer&#xA;" name="ATM_Hierarchy">
+    <regions id="_C7FDcLrxEea1MdTc6sJwSA" name="main region">
+      <vertices type="State" id="_IlGnALrxEea1MdTc6sJwSA" name="Off" incomingTransitions="_SMTx0LrxEea1MdTc6sJwSA _CDLcALr6Eea1MdTc6sJwSA">
+        <outgoingTransitions id="_bxsTgLr4Eea1MdTc6sJwSA" specification="turnOn" target="_40kpULr3Eea1MdTc6sJwSA"/>
+      </vertices>
+      <vertices type="Entry" id="_RXMuwLrxEea1MdTc6sJwSA" name="Entry" >
+        <outgoingTransitions id="_SMTx0LrxEea1MdTc6sJwSA" specification="" target="_IlGnALrxEea1MdTc6sJwSA"/>
+      </vertices>
+      <vertices type="State" id="_40kpULr3Eea1MdTc6sJwSA" name="ATM_Service" incomingTransitions="_bxsTgLr4Eea1MdTc6sJwSA">
+        <outgoingTransitions id="_6kDYALr5Eea1MdTc6sJwSA" specification="service_failure" target="_z0izELr5Eea1MdTc6sJwSA"/>
+        <regions id="_40megLr3Eea1MdTc6sJwSA" name="Customer_Service region">
+          <vertices type="State" id="_5-thMLr3Eea1MdTc6sJwSA" name="Iddle" incomingTransitions="_5-xLkrr3Eea1MdTc6sJwSA _5-0O7rr3Eea1MdTc6sJwSA _Z7wsoLr4Eea1MdTc6sJwSA">
+            <outgoingTransitions id="_5-uIQrr3Eea1MdTc6sJwSA" specification="cardInserted" target="_5-wkgLr3Eea1MdTc6sJwSA"/>
+          </vertices>
+          <vertices type="State" id="_5-wkgLr3Eea1MdTc6sJwSA" name="Verification" incomingTransitions="_5-uIQrr3Eea1MdTc6sJwSA">
+            <outgoingTransitions id="_5-xLkrr3Eea1MdTc6sJwSA" specification="cancel [valid==false]" target="_5-thMLr3Eea1MdTc6sJwSA"/>
+            <outgoingTransitions id="_5-xyqLr3Eea1MdTc6sJwSA" specification="[valid==true]" target="_5-zn0Lr3Eea1MdTc6sJwSA"/>
+          </vertices>
+          <vertices type="State" id="_5-zn0Lr3Eea1MdTc6sJwSA" specification="exit/ raise end_transaction" name="Transaction" incomingTransitions="_5-xyqLr3Eea1MdTc6sJwSA">
+            <outgoingTransitions id="_5-0O7rr3Eea1MdTc6sJwSA" specification="excertion_cardMoney" target="_5-thMLr3Eea1MdTc6sJwSA"/>
+            <regions id="_5-0187r3Eea1MdTc6sJwSA" name="Transaction region">
+              <vertices type="State" id="_5-019Lr3Eea1MdTc6sJwSA" specification="" name="Prompt" incomingTransitions="_5-3SPLr3Eea1MdTc6sJwSA _5-2rK7r3Eea1MdTc6sJwSA">
+                <outgoingTransitions id="_5-019rr3Eea1MdTc6sJwSA" specification="choose_transaction" target="_5-1dA7r3Eea1MdTc6sJwSA"/>
+              </vertices>
+              <vertices type="State" id="_5-1dA7r3Eea1MdTc6sJwSA" name="Verify" incomingTransitions="_5-019rr3Eea1MdTc6sJwSA">
+                <outgoingTransitions id="_5-2EEbr3Eea1MdTc6sJwSA" specification="checksum &#xD;&#xA;[newBalance>0] / &#xD;&#xA;raise confirm" target="_5-35QLr3Eea1MdTc6sJwSA"/>
+                <outgoingTransitions id="_5-2rK7r3Eea1MdTc6sJwSA" specification="checksum&#xD;&#xA;[newBalance&lt;0] / &#xD;&#xA;raise deny " target="_5-019Lr3Eea1MdTc6sJwSA"/>
+              </vertices>
+              <vertices type="Entry" id="_5-3SO7r3Eea1MdTc6sJwSA" name="Entry" >
+                <outgoingTransitions id="_5-3SPLr3Eea1MdTc6sJwSA" specification="" target="_5-019Lr3Eea1MdTc6sJwSA"/>
+              </vertices>
+              <vertices type="State" id="_5-35QLr3Eea1MdTc6sJwSA" name="Process" incomingTransitions="_5-2EEbr3Eea1MdTc6sJwSA"/>
+            </regions>
+          </vertices>
+          <vertices type="Entry" id="_ZYHNALr4Eea1MdTc6sJwSA" name="Entry" >
+            <outgoingTransitions id="_Z7wsoLr4Eea1MdTc6sJwSA" specification="" target="_5-thMLr3Eea1MdTc6sJwSA"/>
+          </vertices>
+        </regions>
+        <regions id="_40l3cLr3Eea1MdTc6sJwSA" name="Maintenance region">
+          <vertices type="State" id="_iP9XcLr4Eea1MdTc6sJwSA" name="Maintenance" incomingTransitions="_nDuBYLr4Eea1MdTc6sJwSA _MH-XMLr5Eea1MdTc6sJwSA">
+            <outgoingTransitions id="_zICu4Lr4Eea1MdTc6sJwSA" specification="every 3600 s" target="_n9VJ8Lr4Eea1MdTc6sJwSA"/>
+          </vertices>
+          <vertices type="Entry" id="_mpGh8Lr4Eea1MdTc6sJwSA" name="Entry" >
+            <outgoingTransitions id="_nDuBYLr4Eea1MdTc6sJwSA" specification="" target="_iP9XcLr4Eea1MdTc6sJwSA"/>
+          </vertices>
+          <vertices type="State" id="_n9VJ8Lr4Eea1MdTc6sJwSA" name="SelfTest" incomingTransitions="_zICu4Lr4Eea1MdTc6sJwSA">
+            <outgoingTransitions id="_JBixwLr5Eea1MdTc6sJwSA" specification="default" target="_GW-B4Lr5Eea1MdTc6sJwSA"/>
+          </vertices>
+          <vertices type="State" id="_GW-B4Lr5Eea1MdTc6sJwSA" name="PrintReport" incomingTransitions="_JBixwLr5Eea1MdTc6sJwSA">
+            <outgoingTransitions id="_MH-XMLr5Eea1MdTc6sJwSA" specification="report_sent" target="_iP9XcLr4Eea1MdTc6sJwSA"/>
+          </vertices>
+        </regions>
+      </vertices>
+      <vertices type="State" id="_z0izELr5Eea1MdTc6sJwSA" name="Out_of_Service" incomingTransitions="_6kDYALr5Eea1MdTc6sJwSA">
+        <outgoingTransitions id="_CDLcALr6Eea1MdTc6sJwSA" specification="turnOff" target="_IlGnALrxEea1MdTc6sJwSA"/>
+      </vertices>
+    </regions>
+  </Statechart>
