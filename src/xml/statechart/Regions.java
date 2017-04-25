@@ -1,17 +1,13 @@
 package xml.statechart;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import mef.basics.EventList;
 
 @XmlRootElement(namespace = "xml.statechart.Statechart")  
 public class Regions {
