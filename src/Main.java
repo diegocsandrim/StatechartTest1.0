@@ -194,7 +194,7 @@ public class Main {
 				
 		scrollPane.setViewportView(table);
 		table.setFont(new Font("Arial", Font.PLAIN, 10));
-		table.setBounds(68, 100, 1, 1);
+		table.setBounds(68, 100, 1, 1);		
 		
 		out = new Output(table);
 				

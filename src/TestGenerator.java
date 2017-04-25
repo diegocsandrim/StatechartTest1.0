@@ -196,11 +196,11 @@ public class TestGenerator {
 				}
 			}
 		}
-		System.out.println("Number of test cases generated: "+ testCasesCount);
-		System.out.println("Number of transitions to be executed: "+ transitionCount);
+		System.out.println("Number of test cases: "+ testCasesCount);
+		System.out.println("Number of transitions: "+ transitionCount);
 		
-		Main.stats.setText("Test cases generated: "+ testCasesCount + " | " +
-				"Transitions to be executed: "+ transitionCount);
+		Main.stats.setText("Test case: "+ testCasesCount + " | " +
+				"Transitions: "+ transitionCount);
 		
 		return testPaths;
 	}

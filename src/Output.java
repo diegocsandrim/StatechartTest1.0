@@ -70,7 +70,8 @@ public class Output {
 		    FileWriter writer = new FileWriter(filePath);
 		    writer.append("State,Transition,Test Path,Expected State\n");
 			for (String line : csvContent) {
-				System.out.println(line.replace(System.getProperty("line.separator"), ""));
+				line = line.replace(System.getProperty("line.separator"), "").replace("\n", "").replace("\r", "");
+				System.out.println(line.trim());
 				writer.append(line.trim()+"\n");
 			}
 				
