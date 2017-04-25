@@ -191,13 +191,17 @@ public class TestGenerator {
 					transitionCount=transitionCount+tc.sequenciaCobertura.trim().split(" ").length;
 					String testPath = tc.sequenciaCobertura+" "+outTrans.getSpecification();
 					testPaths.add(testPath);
-					out.printRow(state.getName(),outTrans.getSpecification(),testPath,sc.statesId.get(outTrans.getTarget()).getName());
-					csvLines.add(state.getName()+","+outTrans.getSpecification()+","+testPath+","+sc.statesId.get(outTrans.getTarget()).getName());
+					out.printRow(state.getName().trim(),outTrans.getSpecification().trim(),testPath.trim(),sc.statesId.get(outTrans.getTarget()).getName().trim());
+					csvLines.add(state.getName().trim()+","+outTrans.getSpecification().trim()+","+testPath.trim()+","+sc.statesId.get(outTrans.getTarget()).getName().trim());
 				}
 			}
 		}
 		System.out.println("Number of test cases generated: "+ testCasesCount);
-		System.out.println("Number of transition to be executed: "+ transitionCount);
+		System.out.println("Number of transitions to be executed: "+ transitionCount);
+		
+		Main.stats.setText("Test cases generated: "+ testCasesCount + " | " +
+				"Transitions to be executed: "+ transitionCount);
+		
 		return testPaths;
 	}
 	

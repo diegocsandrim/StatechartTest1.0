@@ -31,9 +31,8 @@ public class Output {
 	}
 	
 	public void cleanTable() {
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		while( model.getRowCount() > 0 ){
-	        model.removeRow(0);
+		while( Main.model.getRowCount() > 0 ){
+	        Main.model.removeRow(0);
 	    }
 	}
 	
@@ -63,21 +62,21 @@ public class Output {
 	
 	//write to csv file
 	public void writeCsvToFile(String filePath, Set<String> csvContent) {
-		System.out.println("=======" + filePath);
-		try
-		{
-		    FileWriter writer = new FileWriter(filePath+".csv");
+		try {
+			if(!filePath.contains(".csv")) {
+				filePath += ".csv";
+			}
+						
+		    FileWriter writer = new FileWriter(filePath);
 		    writer.append("State,Transition,Test Path,Expected State\n");
 			for (String line : csvContent) {
 				System.out.println(line.replace(System.getProperty("line.separator"), ""));
-				writer.append(line+"\n");
+				writer.append(line.trim()+"\n");
 			}
 				
 		    writer.flush();
 		    writer.close();
-		}
-		catch(IOException e)
-		{
+		} catch(IOException e) {
 		     e.printStackTrace();
 		}
 	}

@@ -44,12 +44,12 @@ public class Main {
 	private JFrame frame;
 	private JTextField selectedFile;
 	private Criteria coverage;
-	JButton btnNewButton;
-	
+		
 	public static Output out;
-	public  JTable table;
-	public DefaultTableModel model; 
-
+	public static JLabel stats;
+	public static DefaultTableModel model;
+	public JTable table;
+		
 	private Set<String> testPaths;
 	private Set<String> csvLines;
 	
@@ -84,15 +84,21 @@ public class Main {
 		xml.createXmlFromYakindu(filePath);
 		
 		try {
-			long startTime = System.nanoTime();
+			long startTime = System.currentTimeMillis();			
+			
 			Statechart statechart = xml.createStatechartFromXml("temp.xml");
 			statechart.constructStateIdHash();
 			TestGenerator tg = new TestGenerator(statechart);
 			testPaths = tg.createTestPaths();
 			csvLines = tg.csvLines;
-			long endTime = System.nanoTime();
-			long duration = (endTime - startTime)/1000;
-			System.out.println("Test Cases Generation takes: " + duration + " miliseconds");
+			
+			long endTime = System.currentTimeMillis();
+			long duration = endTime - startTime;			
+			
+			
+			System.out.println("Execution Time: " + duration + " miliseconds");
+			stats.setText(stats.getText() + " | Execution Time: " + duration + " miliseconds" );
+			stats.setVisible(true);
 		} catch(Exception ex) {
 			JOptionPane.showMessageDialog(null, "An error occurred while generating test cases. "
 					+ "Check for errors in your Yakindu SCT statechart file or maybe we can't help you. Sorry :(", "Error", JOptionPane.ERROR_MESSAGE);
@@ -161,6 +167,7 @@ public class Main {
 	 * Initialize the contents of the frame.
 	 */
 	
+	@SuppressWarnings("serial")
 	private void initialize() {
 		frame = new JFrame();
 		frame.setResizable(false);
@@ -179,17 +186,21 @@ public class Main {
 		String[] columnNames = {"State","Transition","Test Path","Expected State"};
 		model= new DefaultTableModel(null,columnNames);
 
-		table = new JTable(model);
-
+		table = new JTable(model) {  
+		  public boolean isCellEditable(int row, int column){  
+			    return false;  
+		  }  
+		}; 
+				
 		scrollPane.setViewportView(table);
 		table.setFont(new Font("Arial", Font.PLAIN, 10));
 		table.setBounds(68, 100, 1, 1);
 		
 		out = new Output(table);
-		
-		btnNewButton = new JButton("Create test cases");
-		btnNewButton.setFont(new Font("Arial", Font.PLAIN, 10));
-		btnNewButton.addActionListener(new ActionListener() {
+				
+		JButton btnCreateTestCases = new JButton("Create test cases");
+		btnCreateTestCases.setFont(new Font("Arial", Font.PLAIN, 10));
+		btnCreateTestCases.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(selectedFile.getText() == null || selectedFile.getText().equals("")) {
 					JOptionPane.showMessageDialog(null, "Please open your Yakindu Statechart file!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -212,8 +223,8 @@ public class Main {
 				}
 			}
 		});
-		btnNewButton.setBounds(844, 39, 124, 29);
-		frame.getContentPane().add(btnNewButton);
+		btnCreateTestCases.setBounds(844, 39, 124, 29);
+		frame.getContentPane().add(btnCreateTestCases);
 		
 		selectedFile = new JTextField();
 		selectedFile.setFont(new Font("Arial", Font.PLAIN, 10));
@@ -230,7 +241,7 @@ public class Main {
 		lblCriteria.setBounds(16, 30, 258, 37);
 		lblCriteria.setFont(new Font("Arial", Font.PLAIN, 12));
 		frame.getContentPane().add(lblCriteria);
-
+		
 		String[] criteriaList = { Criteria.ALL_PATHS.getText(), Criteria.ALL_TRANSITIONS.getText(), Criteria.ALL_STATES.getText()};
 		JComboBox<String> testCriteriaList = new JComboBox<>(criteriaList);
 		testCriteriaList.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -271,7 +282,7 @@ public class Main {
 				actionExportSPMFButton();
 			}
 		});
-		btnExportInSpmf.setBounds(660, 532, 163, 29);
+		btnExportInSpmf.setBounds(670, 532, 163, 29);
 		frame.getContentPane().add(btnExportInSpmf);
 		
 		JButton btnExportTocsv = new JButton("Export to .csv");
@@ -284,6 +295,10 @@ public class Main {
 		btnExportTocsv.setBounds(844, 532, 124, 29);
 		frame.getContentPane().add(btnExportTocsv);
 		
-		
+		stats = new JLabel();
+		stats.setBounds(16, 532, 1000, 37);		
+		stats.setFont(new Font("Arial", Font.PLAIN, 12));
+		stats.setVisible(false);
+		frame.getContentPane().add(stats);
 	}
 }
