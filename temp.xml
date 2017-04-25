@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <Statechart id="_plnJQBdkEeeFh8rYTe7vrw" specification="interface:&#xA;in event auth&#xA;in event preUpload&#xA;in event startUpload&#xA;in event close&#xA;in event cancel&#xA;out event doUpload&#xA;&#xA;var authResult:boolean = false&#xA;var uploadResult:boolean&#xA;var authUrl:string&#xA;var totalVideos:integer&#xA;var totalVideosUploaded:integer = 0&#xA;var totalUploadErrors:integer = 0&#xA;var maxSimultaneousUploads:integer&#xA;var currentUploads:integer = 0&#xA;var csvFile:string&#xA;var videoFolder:string&#xA;var videoFile:string&#xA;var errorMsg:string&#xA;&#xA;operation authenticate(url:string):boolean&#xA;operation openPreUploadWindow():void&#xA;operation cancelUpload():void&#xA;operation confirmCancelation():boolean&#xA;operation uploadVideo(videoFile:string):boolean&#xA;operation checkParameters():boolean&#xA;operation getVideosAmount(csvFile:string,videoFolder:string):integer&#xA;operation showConfirmation():void&#xA;operation getCsvFile():string&#xA;operation getVideoFolder():string&#xA;operation showError(msg:string):void&#xA;operation getErrorMessage():void&#xA;operation checkMetadata():boolean" name="default">
+    <regions id="_L5L_eBmPEeeNGeJcfIz6YA" name="youtube_uploader">
+      <vertices type="Entry" id="_L5yclRmPEeeNGeJcfIz6YA" name="Entry" >
+        <outgoingTransitions id="_L5ycnRmPEeeNGeJcfIz6YA" target="_L5or3BmPEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="State" id="_L5or3BmPEeeNGeJcfIz6YA" specification="entry /&#xD;&#xA;csvFile = getCsvFile();&#xD;&#xA;videoFolder = getVideoFolder();&#xD;&#xA;maxSimultaneousUploads = 3" name="Idle" incomingTransitions="_L5ycnRmPEeeNGeJcfIz6YA _L5orphmPEeeNGeJcfIz6YA _L5ormRmPEeeNGeJcfIz6YA _L5orkhmPEeeNGeJcfIz6YA _L5orixmPEeeNGeJcfIz6YA">
+        <outgoingTransitions id="_L5ycchmPEeeNGeJcfIz6YA" specification="auth" target="_L5e7cRmPEeeNGeJcfIz6YA"/>
+        <outgoingTransitions id="_L5osBBmPEeeNGeJcfIz6YA" specification="preUpload" target="_L5L_0RmPEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="State" id="_L5e7cRmPEeeNGeJcfIz6YA" specification="entry / authResult = authenticate(authUrl)" name="Auth" incomingTransitions="_L5ycchmPEeeNGeJcfIz6YA">
+        <outgoingTransitions id="_L5orexmPEeeNGeJcfIz6YA" specification="always" target="_L5L_4RmPEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="State" id="_L5Vw7hmPEeeNGeJcfIz6YA" specification="entry / totalVideos = getVideosAmount(csvFile,videoFolder)" name="Pre-Upload" incomingTransitions="_L5Vw0xmPEeeNGeJcfIz6YA">
+        <outgoingTransitions id="_L5orphmPEeeNGeJcfIz6YA" specification="cancel" target="_L5or3BmPEeeNGeJcfIz6YA"/>
+        <outgoingTransitions id="_L5VxDBmPEeeNGeJcfIz6YA" specification="startUpload" target="_L5L_fhmPEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="FinalState" id="_L5VwvhmPEeeNGeJcfIz6YA" name="FinalState" incomingTransitions="_L5VwrRmPEeeNGeJcfIz6YA _OfRRjRmPEeeNGeJcfIz6YA"/>
+      <vertices type="State" id="_L5VwmhmPEeeNGeJcfIz6YA" specification="entry / &#xD;&#xA;showConfirmation()" name="Confirmation" incomingTransitions="_L5VwixmPEeeNGeJcfIz6YA">
+        <outgoingTransitions id="_L5VwrRmPEeeNGeJcfIz6YA" specification="close" target="_L5VwvhmPEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="Choice" id="_L5L_4RmPEeeNGeJcfIz6YA" name="Choice" incomingTransitions="_L5orexmPEeeNGeJcfIz6YA">
+        <outgoingTransitions id="_L5ormRmPEeeNGeJcfIz6YA" specification="[authResult == true]" target="_L5or3BmPEeeNGeJcfIz6YA"/>
+        <outgoingTransitions id="_L5VwchmPEeeNGeJcfIz6YA" specification="else" target="_L5L_ixmPEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="Choice" id="_L5L_0RmPEeeNGeJcfIz6YA" name="Choice" incomingTransitions="_L5osBBmPEeeNGeJcfIz6YA">
+        <outgoingTransitions id="_L5Vw0xmPEeeNGeJcfIz6YA" specification="[authResult == true &amp;&amp;  checkParameters() == true] /&#xD;&#xA;openPreUploadWindow()" target="_L5Vw7hmPEeeNGeJcfIz6YA"/>
+        <outgoingTransitions id="_L5L_2xmPEeeNGeJcfIz6YA" specification="else" target="_L5L_uRmPEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="State" id="_L5L_uRmPEeeNGeJcfIz6YA" specification="entry / showError(errorMsg)" name="ErrorMessage" incomingTransitions="_L5L_2xmPEeeNGeJcfIz6YA _L5L_oRmPEeeNGeJcfIz6YA">
+        <outgoingTransitions id="_L5orixmPEeeNGeJcfIz6YA" specification="close" target="_L5or3BmPEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="State" id="_L5L_ixmPEeeNGeJcfIz6YA" specification="entry / showError(errorMsg)" name="AuthErrorMessage" incomingTransitions="_L5VwchmPEeeNGeJcfIz6YA">
+        <outgoingTransitions id="_L5orkhmPEeeNGeJcfIz6YA" specification="close" target="_L5or3BmPEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="Choice" id="_L5L_fhmPEeeNGeJcfIz6YA" name="Choice" incomingTransitions="_L5VxDBmPEeeNGeJcfIz6YA">
+        <outgoingTransitions id="_L5L_oRmPEeeNGeJcfIz6YA" specification="else" target="_L5L_uRmPEeeNGeJcfIz6YA"/>
+        <outgoingTransitions id="_OfIG8BmPEeeNGeJcfIz6YA" specification="[checkMetadata() == true]" target="_yMb-UBmXEeeNGeJcfIz6YA"/>
+      </vertices>
+      <vertices type="State" id="_rTYCgBmcEeeem8uZc4Seag" name="AsyncUpload">
+        <regions id="_rTYCgxmcEeeem8uZc4Seag" name="r1">
+          <vertices type="State" id="_yMb-UBmXEeeNGeJcfIz6YA" name="UploadHandler" incomingTransitions="_OfIG8BmPEeeNGeJcfIz6YA _rMEEIBmdEeeem8uZc4Seag">
+            <outgoingTransitions id="_L5VwixmPEeeNGeJcfIz6YA" specification="[totalVideosUploaded + totalUploadErrors == totalVideos]" target="_L5VwmhmPEeeNGeJcfIz6YA"/>
+            <outgoingTransitions id="_OfRRjRmPEeeNGeJcfIz6YA" specification="cancel &#xD;&#xA;[confirmCancelation() == true] /&#xD;&#xA;cancelUpload()" target="_L5VwvhmPEeeNGeJcfIz6YA"/>
+            <outgoingTransitions id="_rMEEIBmdEeeem8uZc4Seag" specification="[currentUploads &lt; maxSimultaneousUploads &#xD;&#xA;&#x9;&amp;&amp; totalVideosUploaded + totalUploadErrors &lt; totalVideos] / raise doUpload" target="_yMb-UBmXEeeNGeJcfIz6YA"/>
+          </vertices>
+        </regions>
+        <regions id="_rTYChBmcEeeem8uZc4Seag" name="r2">
+          <vertices type="State" id="_JuRULBmcEeeem8uZc4Seag" specification="entry [totalVideos > 0] / &#xD;&#xA;currentUploads = currentUploads + 1&#xD;&#xA;after 3s /uploadResult = uploadVideo(videoFile);&#xD;&#xA;currentUploads = currentUploads - 1&#xD;&#xA;exit [uploadResult == true] / totalVideosUploaded = totalVideosUploaded + 1&#xD;&#xA;exit [uploadResult == false] / totalUploadErrors = totalUploadErrors + 1" name="Upload" incomingTransitions="_xHvRABmgEeeem8uZc4Seag"/>
+          <vertices type="Entry" id="_kailqhmgEeeem8uZc4Seag" name="Entry" >
+            <outgoingTransitions id="_unVw0BmgEeeem8uZc4Seag" specification="" target="_rMR_MBmgEeeem8uZc4Seag"/>
+          </vertices>
+          <vertices type="State" id="_rMR_MBmgEeeem8uZc4Seag" name="Wait" incomingTransitions="_unVw0BmgEeeem8uZc4Seag">
+            <outgoingTransitions id="_xHvRABmgEeeem8uZc4Seag" specification="doUpload" target="_JuRULBmcEeeem8uZc4Seag"/>
+          </vertices>
+        </regions>
+      </vertices>
+    </regions>
+  </Statechart>
