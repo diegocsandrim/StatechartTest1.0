@@ -1,59 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <Statechart id="_C7EcYLrxEea1MdTc6sJwSA" specification="interface:&#xA;// Define events and&#xA;// and variables here&#xA;in event turnOn&#xA;in event turnOff&#xA;in event cancel&#xA;in event cardInserted&#xA;in event choose_transaction&#xA;in event checksum&#xA;in event deny&#xA;in event confirm&#xA;in event end_transaction&#xA;in event excertion_cardMoney&#xA;in event service_failure&#xA;in event report_sent&#xA;var valid:boolean&#xA;var newBalance:integer&#xA;" name="ATM_Hierarchy">
-    <regions id="_C7FDcLrxEea1MdTc6sJwSA" name="main region">
-      <vertices type="State" id="_IlGnALrxEea1MdTc6sJwSA" name="Off" incomingTransitions="_SMTx0LrxEea1MdTc6sJwSA _CDLcALr6Eea1MdTc6sJwSA">
-        <outgoingTransitions id="_bxsTgLr4Eea1MdTc6sJwSA" specification="turnOn" target="_40kpULr3Eea1MdTc6sJwSA"/>
+  <Statechart id="_n2A34Bc4EeeAqZ-GpVD0AQ" specification="interface Player:&#xD;&#xA;  in event start&#xD;&#xA;  in event close&#xD;&#xA;  in event play&#xD;&#xA;  in event pause&#xD;&#xA;  in event enterPin&#xD;&#xA;  in event seek&#xD;&#xA;  in event acceptSuggestion&#xD;&#xA;  var pinResponse: integer&#xD;&#xA;  var time : integer&#xD;&#xA;  var allowedAge: integer = 0&#xD;&#xA;  var autoSuggestingTime: integer&#xD;&#xA;  var seekEnterState: integer = 0&#xD;&#xA;  operation showPinDialog():void&#xD;&#xA;  operation closePinDialog():void&#xD;&#xA;  operation loadNextMovie():void&#xA;interface Movie:&#xD;&#xA;  var duration: integer = 30&#xD;&#xA;  var ageRating: integer = 12&#xA;interface NextMovie:&#xD;&#xA;  var duration: integer = 60&#xD;&#xA;  var ageRating: integer = 0&#xA;interface User:&#xD;&#xA;  var parentalPin: integer = 1234&#xA;  var seekTime: integer = 20&#xA;" name="VideoPlayer">
+    <regions id="_n2Ko4hc4EeeAqZ-GpVD0AQ" name="main region">
+      <vertices type="Entry" id="_n2dj0Rc4EeeAqZ-GpVD0AQ" name="Entry" >
+        <outgoingTransitions id="_x1sggCl1EeeLEq2oQtZptA" target="_x11DYSl1EeeLEq2oQtZptA"/>
       </vertices>
-      <vertices type="Entry" id="_RXMuwLrxEea1MdTc6sJwSA" name="Entry" >
-        <outgoingTransitions id="_SMTx0LrxEea1MdTc6sJwSA" specification="" target="_IlGnALrxEea1MdTc6sJwSA"/>
-      </vertices>
-      <vertices type="State" id="_40kpULr3Eea1MdTc6sJwSA" name="ATM_Service" incomingTransitions="_bxsTgLr4Eea1MdTc6sJwSA">
-        <outgoingTransitions id="_6kDYALr5Eea1MdTc6sJwSA" specification="service_failure" target="_z0izELr5Eea1MdTc6sJwSA"/>
-        <regions id="_40megLr3Eea1MdTc6sJwSA" name="Customer_Service region">
-          <vertices type="State" id="_5-thMLr3Eea1MdTc6sJwSA" name="Iddle" incomingTransitions="_5-xLkrr3Eea1MdTc6sJwSA _5-0O7rr3Eea1MdTc6sJwSA _Z7wsoLr4Eea1MdTc6sJwSA">
-            <outgoingTransitions id="_5-uIQrr3Eea1MdTc6sJwSA" specification="cardInserted" target="_5-wkgLr3Eea1MdTc6sJwSA"/>
+      <vertices type="State" id="_ZWL40BdaEeeAqZ-GpVD0AQ" name="Opened" incomingTransitions="_x15U0Cl1EeeLEq2oQtZptA _pzbbYBgrEee24vnz-7pKpw">
+        <outgoingTransitions id="_x1wK4Cl1EeeLEq2oQtZptA" specification="Player.close" target="_x11DYSl1EeeLEq2oQtZptA"/>
+        <regions id="_ZWMf4RdaEeeAqZ-GpVD0AQ" name="inner region">
+          <vertices type="Entry" id="_E_yyABdbEeeAqZ-GpVD0AQ" name="Entry" >
+            <outgoingTransitions id="_9DRbUCm5EeeLEq2oQtZptA" target="_5MqWICm5EeeLEq2oQtZptA"/>
           </vertices>
-          <vertices type="State" id="_5-wkgLr3Eea1MdTc6sJwSA" name="Verification" incomingTransitions="_5-uIQrr3Eea1MdTc6sJwSA">
-            <outgoingTransitions id="_5-xLkrr3Eea1MdTc6sJwSA" specification="cancel [valid==false]" target="_5-thMLr3Eea1MdTc6sJwSA"/>
-            <outgoingTransitions id="_5-xyqLr3Eea1MdTc6sJwSA" specification="[valid==true]" target="_5-zn0Lr3Eea1MdTc6sJwSA"/>
+          <vertices type="State" id="_UgcnABdcEeeAqZ-GpVD0AQ" specification="exit / Player.pinResponse = 0" name="AskingPin" incomingTransitions="_1BUnAC6vEeezu6wbWnQu5A">
+            <outgoingTransitions id="__xjgoBdcEeeAqZ-GpVD0AQ" specification="Player.enterPin&#xD;&#xA;[Player.pinResponse == User.parentalPin] / &#xD;&#xA;Player.closePinDialog();&#xD;&#xA;Player.allowedAge = Movie.ageRating" target="_yN2OYBc4EeeAqZ-GpVD0AQ"/>
           </vertices>
-          <vertices type="State" id="_5-zn0Lr3Eea1MdTc6sJwSA" specification="exit/ raise end_transaction" name="Transaction" incomingTransitions="_5-xyqLr3Eea1MdTc6sJwSA">
-            <outgoingTransitions id="_5-0O7rr3Eea1MdTc6sJwSA" specification="excertion_cardMoney" target="_5-thMLr3Eea1MdTc6sJwSA"/>
-            <regions id="_5-0187r3Eea1MdTc6sJwSA" name="Transaction region">
-              <vertices type="State" id="_5-019Lr3Eea1MdTc6sJwSA" specification="" name="Prompt" incomingTransitions="_5-3SPLr3Eea1MdTc6sJwSA _5-2rK7r3Eea1MdTc6sJwSA">
-                <outgoingTransitions id="_5-019rr3Eea1MdTc6sJwSA" specification="choose_transaction" target="_5-1dA7r3Eea1MdTc6sJwSA"/>
-              </vertices>
-              <vertices type="State" id="_5-1dA7r3Eea1MdTc6sJwSA" name="Verify" incomingTransitions="_5-019rr3Eea1MdTc6sJwSA">
-                <outgoingTransitions id="_5-2EEbr3Eea1MdTc6sJwSA" specification="checksum &#xD;&#xA;[newBalance>0] / &#xD;&#xA;raise confirm" target="_5-35QLr3Eea1MdTc6sJwSA"/>
-                <outgoingTransitions id="_5-2rK7r3Eea1MdTc6sJwSA" specification="checksum&#xD;&#xA;[newBalance&lt;0] / &#xD;&#xA;raise deny " target="_5-019Lr3Eea1MdTc6sJwSA"/>
-              </vertices>
-              <vertices type="Entry" id="_5-3SO7r3Eea1MdTc6sJwSA" name="Entry" >
-                <outgoingTransitions id="_5-3SPLr3Eea1MdTc6sJwSA" specification="" target="_5-019Lr3Eea1MdTc6sJwSA"/>
-              </vertices>
-              <vertices type="State" id="_5-35QLr3Eea1MdTc6sJwSA" name="Process" incomingTransitions="_5-2EEbr3Eea1MdTc6sJwSA"/>
-            </regions>
+          <vertices type="State" id="_-Z23MBgHEeee98OWuv3Xvw" specification="entry / Player.autoSuggestingTime = 10&#xD;&#xA;every 1s / Player.autoSuggestingTime -=1" name="SuggestingNext" incomingTransitions="_Bc9b0BgIEeee98OWuv3Xvw">
+            <outgoingTransitions id="_kDV-ABgpEee24vnz-7pKpw" specification="Player.acceptSuggestion" target="_FYdTIBgrEee24vnz-7pKpw"/>
+            <outgoingTransitions id="_QdBCMBgqEee24vnz-7pKpw" specification="[Player.autoSuggestingTime &lt;= 0]" target="_FYdTIBgrEee24vnz-7pKpw"/>
           </vertices>
-          <vertices type="Entry" id="_ZYHNALr4Eea1MdTc6sJwSA" name="Entry" >
-            <outgoingTransitions id="_Z7wsoLr4Eea1MdTc6sJwSA" specification="" target="_5-thMLr3Eea1MdTc6sJwSA"/>
+          <vertices type="State" id="_-Q7JYBgiEeee98OWuv3Xvw" specification="entry /&#xD;&#xA;Player.time = User.seekTime" name="Seeking" incomingTransitions="_Bcu-EBgjEeee98OWuv3Xvw _TlgtoC6mEeezu6wbWnQu5A">
+            <outgoingTransitions id="_54wUMC6oEeezu6wbWnQu5A" specification="always" target="_3bDisC6oEeezu6wbWnQu5A"/>
           </vertices>
-        </regions>
-        <regions id="_40l3cLr3Eea1MdTc6sJwSA" name="Maintenance region">
-          <vertices type="State" id="_iP9XcLr4Eea1MdTc6sJwSA" name="Maintenance" incomingTransitions="_nDuBYLr4Eea1MdTc6sJwSA _MH-XMLr5Eea1MdTc6sJwSA">
-            <outgoingTransitions id="_zICu4Lr4Eea1MdTc6sJwSA" specification="every 3600 s" target="_n9VJ8Lr4Eea1MdTc6sJwSA"/>
+          <vertices type="State" id="_FYdTIBgrEee24vnz-7pKpw" specification="entry /&#xD;&#xA;Movie.duration = NextMovie.duration;&#xD;&#xA;Movie.ageRating = NextMovie.ageRating;&#xD;&#xA;Player.loadNextMovie()" name="LoadingNextMovie" incomingTransitions="_QdBCMBgqEee24vnz-7pKpw _kDV-ABgpEee24vnz-7pKpw">
+            <outgoingTransitions id="_pzbbYBgrEee24vnz-7pKpw" specification="always" target="_ZWL40BdaEeeAqZ-GpVD0AQ"/>
           </vertices>
-          <vertices type="Entry" id="_mpGh8Lr4Eea1MdTc6sJwSA" name="Entry" >
-            <outgoingTransitions id="_nDuBYLr4Eea1MdTc6sJwSA" specification="" target="_iP9XcLr4Eea1MdTc6sJwSA"/>
+          <vertices type="Choice" id="_5MqWICm5EeeLEq2oQtZptA" name="Choice" incomingTransitions="_9DRbUCm5EeeLEq2oQtZptA">
+            <outgoingTransitions id="_ILzZgCm7EeeLEq2oQtZptA" specification="default" target="_yN2OYBc4EeeAqZ-GpVD0AQ"/>
+            <outgoingTransitions id="_1BUnAC6vEeezu6wbWnQu5A" specification="[Movie.ageRating > Player.allowedAge] /&#xD;&#xA;Player.showPinDialog()" target="_UgcnABdcEeeAqZ-GpVD0AQ"/>
           </vertices>
-          <vertices type="State" id="_n9VJ8Lr4Eea1MdTc6sJwSA" name="SelfTest" incomingTransitions="_zICu4Lr4Eea1MdTc6sJwSA">
-            <outgoingTransitions id="_JBixwLr5Eea1MdTc6sJwSA" specification="default" target="_GW-B4Lr5Eea1MdTc6sJwSA"/>
+          <vertices type="State" id="_gDvY8Bc5EeeAqZ-GpVD0AQ" name="Paused" incomingTransitions="_P0DGIBdYEeeAqZ-GpVD0AQ _71-14C6oEeezu6wbWnQu5A">
+            <outgoingTransitions id="_cO2PYBdXEeeAqZ-GpVD0AQ" specification="Player.play" target="_yN2OYBc4EeeAqZ-GpVD0AQ"/>
+            <outgoingTransitions id="_TlgtoC6mEeezu6wbWnQu5A" specification="Player.seek / Player.seekEnterState = 1" target="_-Q7JYBgiEeee98OWuv3Xvw"/>
           </vertices>
-          <vertices type="State" id="_GW-B4Lr5Eea1MdTc6sJwSA" name="PrintReport" incomingTransitions="_JBixwLr5Eea1MdTc6sJwSA">
-            <outgoingTransitions id="_MH-XMLr5Eea1MdTc6sJwSA" specification="report_sent" target="_iP9XcLr4Eea1MdTc6sJwSA"/>
+          <vertices type="State" id="_yN2OYBc4EeeAqZ-GpVD0AQ" specification="every 1 s / Player.time += 1&#xD;&#xA; " name="Playing" incomingTransitions="_cO2PYBdXEeeAqZ-GpVD0AQ _ILzZgCm7EeeLEq2oQtZptA __xjgoBdcEeeAqZ-GpVD0AQ _KvVaUC6qEeezu6wbWnQu5A">
+            <outgoingTransitions id="_P0DGIBdYEeeAqZ-GpVD0AQ" specification="Player.pause" target="_gDvY8Bc5EeeAqZ-GpVD0AQ"/>
+            <outgoingTransitions id="_Bc9b0BgIEeee98OWuv3Xvw" specification="[Player.time >= Movie.duration] /&#xD;&#xA;Player.time = 0" target="_-Z23MBgHEeee98OWuv3Xvw"/>
+            <outgoingTransitions id="_Bcu-EBgjEeee98OWuv3Xvw" specification="Player.seek / Player.seekEnterState = 0" target="_-Q7JYBgiEeee98OWuv3Xvw"/>
+          </vertices>
+          <vertices type="Choice" id="_3bDisC6oEeezu6wbWnQu5A" name="Choice" incomingTransitions="_54wUMC6oEeezu6wbWnQu5A">
+            <outgoingTransitions id="_KvVaUC6qEeezu6wbWnQu5A" specification="default" target="_yN2OYBc4EeeAqZ-GpVD0AQ"/>
+            <outgoingTransitions id="_71-14C6oEeezu6wbWnQu5A" specification="[Player.seekEnterState == 1]" target="_gDvY8Bc5EeeAqZ-GpVD0AQ"/>
           </vertices>
         </regions>
       </vertices>
-      <vertices type="State" id="_z0izELr5Eea1MdTc6sJwSA" name="Out_of_Service" incomingTransitions="_6kDYALr5Eea1MdTc6sJwSA">
-        <outgoingTransitions id="_CDLcALr6Eea1MdTc6sJwSA" specification="turnOff" target="_IlGnALrxEea1MdTc6sJwSA"/>
+      <vertices type="State" id="_x11DYSl1EeeLEq2oQtZptA" name="Closed" incomingTransitions="_x1wK4Cl1EeeLEq2oQtZptA _x1sggCl1EeeLEq2oQtZptA">
+        <outgoingTransitions id="_x15U0Cl1EeeLEq2oQtZptA" specification="Player.start" target="_ZWL40BdaEeeAqZ-GpVD0AQ"/>
       </vertices>
     </regions>
   </Statechart>

@@ -25,7 +25,8 @@ public class Main {
 	public enum Criteria{
 		ALL_PATHS("all paths"),
 		ALL_STATES("all states"),
-		ALL_TRANSITIONS("all transitions");
+		ALL_TRANSITIONS("all transitions"),
+		ALL_TRANSITIONS_WITH_FAULTS("all transitions with faults");
 		
 		
 		private final String text;
@@ -95,7 +96,12 @@ public class Main {
 			ex.printStackTrace();
 		}
 	}
-	
+
+	//action for the create test cases button
+	private void actionCreateTestCases_AllTransitionsWithFaults() {
+		// TODO Auto-generated method stub
+		
+	}
 	//action for the open button
 	private void actionOpenStatechartButton() {
 		String filePath = "";
@@ -174,6 +180,10 @@ public class Main {
 							System.out.println("Creating Test for All Transitions Coverage Criteria");
 							actionCreateTestCases_AllTransitions();
 							break;	
+					case ALL_TRANSITIONS_WITH_FAULTS:
+						System.out.println("Creating Test for All Transitions With Faults Coverage Criteria");
+						actionCreateTestCases_AllTransitionsWithFaults();
+						break;	
 				}
 			}
 		});
