@@ -139,6 +139,7 @@ public class Main {
 			if (vertice.getClass().getName() != State.class.getName()) {
 				continue;
 			}
+			State state = (State)vertice;
 			
 			for (Transition transition : transitionlist) {
 				// Skip always transition
@@ -146,7 +147,7 @@ public class Main {
 					continue;
 				}
 				
-				if (vertice.getOutgoingTransitionList().contains(transition.getId())) {
+				if (state.getoutgoingTransitionIdList().contains(transition.getId())) {
 					continue;
 				}
 				

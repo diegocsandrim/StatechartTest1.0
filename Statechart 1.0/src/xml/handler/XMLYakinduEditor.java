@@ -19,6 +19,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import model.yakindu.Entry;
+import model.yakindu.FinalState;
 import model.yakindu.State;
 import model.yakindu.Transition;
 import model.yakindu.Vertice;
@@ -158,12 +159,35 @@ public class XMLYakinduEditor {
 		case "sgraph:State":
 			vertice = this.buildState(verticeNode);
 			break;
+		case "sgraph:FinalState":
+			vertice = this.buildFinalState(verticeNode);
+			break;
 		default:
 			System.err.println(String.format("Vertice type %s is currently not supported.", type));
 			throw new NotImplementedException();
 		}
 
 		return vertice;
+	}
+
+	private FinalState buildFinalState(Element verticeNode) {
+		String id = verticeNode.getAttribute("xmi:id");
+		List<String> incomingTransitionIdList = Arrays
+				.asList(verticeNode.getAttribute("incomingTransitions").split(" "));
+	
+		FinalState state = new FinalState(id);
+	
+		for (String incomingTransition : incomingTransitionIdList) {
+			incomingTransition = incomingTransition.trim();
+	
+			if (incomingTransition.equals("")) {
+				continue;
+			}
+	
+			state.getincomingTransitionIdList().add(incomingTransition);
+		}
+	
+		return state;
 	}
 
 	private State buildState(Element verticeNode) {
@@ -181,12 +205,12 @@ public class XMLYakinduEditor {
 				continue;
 			}
 
-			state.getIncomingTransitionList().add(incomingTransition);
+			state.getincomingTransitionIdList().add(incomingTransition);
 		}
 
 		ArrayList<String> transitionIdList = getTransitionIdList(verticeNode);
 
-		state.getOutgoingTransitionList().addAll(transitionIdList);
+		state.getoutgoingTransitionIdList().addAll(transitionIdList);
 
 		return state;
 	}
@@ -198,7 +222,7 @@ public class XMLYakinduEditor {
 
 		ArrayList<String> transitionIdList = getTransitionIdList(verticeNode);
 
-		entry.getOutgoingTransitionList().addAll(transitionIdList);
+		entry.getoutgoingTransitionIdList().addAll(transitionIdList);
 
 		return entry;
 	}
@@ -224,7 +248,7 @@ public class XMLYakinduEditor {
 		verticeElement.setAttribute("xsi:type", "sgraph:State");
 		verticeElement.setAttribute("xmi:id", state.getId());
 		verticeElement.setAttribute("name", state.getName());
-		verticeElement.setAttribute("incomingTransitions", String.join(" ", state.getIncomingTransitionList()));
+		verticeElement.setAttribute("incomingTransitions", String.join(" ", state.getincomingTransitionIdList()));
 
 		return verticeElement;
 	}

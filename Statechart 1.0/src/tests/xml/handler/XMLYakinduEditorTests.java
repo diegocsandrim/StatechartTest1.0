@@ -53,7 +53,7 @@ public class XMLYakinduEditorTests {
 		assertEquals(vertice0.getClass().getName(), Entry.class.getName());
 		Entry entry0 = (Entry) vertice0;
 		assertEquals(entry0.getId(), "_2XWGKTX_EeePhbNkQZRfzQ");
-		ArrayList<String> entry0OutgoingTransitionList = entry0.getOutgoingTransitionList();
+		ArrayList<String> entry0OutgoingTransitionList = entry0.getoutgoingTransitionIdList();
 		assertEquals(entry0OutgoingTransitionList.size(), 1);
 		assertEquals(entry0OutgoingTransitionList.get(0), "_2Xf3NDX_EeePhbNkQZRfzQ");
 
@@ -62,10 +62,10 @@ public class XMLYakinduEditorTests {
 		State state1 = (State) vertice1;
 		assertEquals(state1.getId(), "_2Xf3JDX_EeePhbNkQZRfzQ");
 		assertEquals(state1.getName(), "StateA");
-		ArrayList<String> state1OutgoingTransitionList = state1.getOutgoingTransitionList();
+		ArrayList<String> state1OutgoingTransitionList = state1.getoutgoingTransitionIdList();
 		assertEquals(state1OutgoingTransitionList.size(), 1);
 		assertEquals(state1OutgoingTransitionList.get(0), "_0yah4Da-Eee84IcaXJAbLA");
-		ArrayList<String> state1IncomingTransitionList = state1.getIncomingTransitionList();
+		ArrayList<String> state1IncomingTransitionList = state1.getincomingTransitionIdList();
 		assertEquals(state1IncomingTransitionList.size(), 1);
 		assertEquals(state1IncomingTransitionList.get(0), "_2Xf3NDX_EeePhbNkQZRfzQ");
 
@@ -74,9 +74,9 @@ public class XMLYakinduEditorTests {
 		State state2 = (State) vertice2;
 		assertEquals(state2.getId(), "_yGFegDa-Eee84IcaXJAbLA");
 		assertEquals(state2.getName(), "StateB");
-		ArrayList<String> state2OutgoingTransitionList = state2.getOutgoingTransitionList();
+		ArrayList<String> state2OutgoingTransitionList = state2.getoutgoingTransitionIdList();
 		assertEquals(state2OutgoingTransitionList.size(), 0);
-		ArrayList<String> state2IncomingTransitionList = state2.getIncomingTransitionList();
+		ArrayList<String> state2IncomingTransitionList = state2.getincomingTransitionIdList();
 		assertEquals(state2IncomingTransitionList.size(), 1);
 		assertEquals(state2IncomingTransitionList.get(0), "_0yah4Da-Eee84IcaXJAbLA");
 	}
@@ -116,8 +116,8 @@ public class XMLYakinduEditorTests {
 		State state3 = (State) vertice3;
 		assertEquals(state3.getId(), "custom_id");
 		assertEquals(state3.getName(), "fault");
-		assertEquals(state3.getOutgoingTransitionList().size(), 0);
-		assertEquals(state3.getIncomingTransitionList().size(), 0);
+		assertEquals(state3.getoutgoingTransitionIdList().size(), 0);
+		assertEquals(state3.getincomingTransitionIdList().size(), 0);
 	}
 
 	@Test
@@ -143,13 +143,13 @@ public class XMLYakinduEditorTests {
 		assertEquals(verticeList.size(), 3);
 
 		State sourceState = (State) verticeList.get(2);
-		assertEquals(sourceState.getOutgoingTransitionList().size(), 1);
-		assertEquals(sourceState.getOutgoingTransitionList().get(0), "custom_id");
-		assertEquals(sourceState.getIncomingTransitionList().size(), 1);
+		assertEquals(sourceState.getoutgoingTransitionIdList().size(), 1);
+		assertEquals(sourceState.getoutgoingTransitionIdList().get(0), "custom_id");
+		assertEquals(sourceState.getincomingTransitionIdList().size(), 1);
 
 		State targetState = (State) verticeList.get(1);
-		assertEquals(targetState.getOutgoingTransitionList().size(), 1);
-		assertEquals(targetState.getIncomingTransitionList().size(), 2);
-		assertEquals(targetState.getIncomingTransitionList().get(1), "custom_id");
+		assertEquals(targetState.getoutgoingTransitionIdList().size(), 1);
+		assertEquals(targetState.getincomingTransitionIdList().size(), 2);
+		assertEquals(targetState.getincomingTransitionIdList().get(1), "custom_id");
 	}
 }

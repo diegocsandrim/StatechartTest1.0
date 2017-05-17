@@ -1,15 +1,11 @@
 package model.yakindu;
 
-import java.util.ArrayList;
-
 public abstract class Vertice {
 	private String id;
-	private ArrayList<String> outgoingTransitionIdList;
 
 	public Vertice(String id) {
 		super();
 		this.id = id;
-		this.outgoingTransitionIdList = new ArrayList<String>();
 	}
 
 	public String getId() {
@@ -18,10 +14,6 @@ public abstract class Vertice {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public ArrayList<String> getOutgoingTransitionList() {
-		return outgoingTransitionIdList;
 	}
 
 	public static String createId() {
