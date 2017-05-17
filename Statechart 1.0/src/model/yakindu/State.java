@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class State extends Vertice {
 	private String name;
 	private ArrayList<String> incomingTransitionIdList;
-	
+
 	public State(String id, String name) {
 		super(id);
 		this.name = name;

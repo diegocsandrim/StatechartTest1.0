@@ -2,16 +2,16 @@ package model.yakindu;
 
 public class Transition {
 	private String id;
-	private String verticeId;
+	private String sourceVerticeId;
+	private String targetVerticeId;
 	private String specification;
-	private String target;
-	
-	public Transition(String id, String verticeId, String specification, String target) {
+
+	public Transition(String id, String sourceVerticeId, String targetVerticeId, String specification) {
 		super();
 		this.id = id;
-		this.verticeId = verticeId;
+		this.sourceVerticeId = sourceVerticeId;
 		this.specification = specification;
-		this.target = target;
+		this.targetVerticeId = targetVerticeId;
 	}
 
 	public String getId() {
@@ -22,12 +22,20 @@ public class Transition {
 		this.id = id;
 	}
 
-	public String getVerticeId() {
-		return verticeId;
+	public String getSourceVerticeId() {
+		return sourceVerticeId;
 	}
 
-	public void setVerticeId(String verticeId) {
-		this.verticeId = verticeId;
+	public void setSourceVerticeId(String verticeId) {
+		this.sourceVerticeId = verticeId;
+	}
+
+	public String getTargetVerticeId() {
+		return targetVerticeId;
+	}
+
+	public void setTargetVerticeId(String target) {
+		this.targetVerticeId = target;
 	}
 
 	public String getSpecification() {
@@ -37,14 +45,4 @@ public class Transition {
 	public void setSpecification(String specification) {
 		this.specification = specification;
 	}
-
-	public String getTarget() {
-		return target;
-	}
-
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	
-	
 }

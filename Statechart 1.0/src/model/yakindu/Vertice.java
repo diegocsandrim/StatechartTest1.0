@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public abstract class Vertice {
 	private String id;
 	private ArrayList<String> outgoingTransitionIdList;
-	
+
 	public Vertice(String id) {
 		super();
 		this.id = id;
@@ -25,7 +25,7 @@ public abstract class Vertice {
 	}
 
 	public static String createId() {
-		String id = new Integer(((int) Math.floor(Math.random() * 10e22))).toString();
+		String id = new Integer(((int) Math.floor(Math.random() * 10e8))).toString();
 		return id;
 	}
 

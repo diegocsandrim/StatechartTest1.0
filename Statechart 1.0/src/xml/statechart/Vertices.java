@@ -1,38 +1,37 @@
 package xml.statechart;
 
-
 import java.util.ArrayList;
 
-import javax.xml.bind.annotation.XmlAttribute;  
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(namespace = "xml.statechart.Statechart")
-public class Vertices implements Comparable<Vertices>{
+public class Vertices implements Comparable<Vertices> {
 
 	private ArrayList<OutgoingTransitions> listTransitions;
-	
+
 	private ArrayList<Regions> listRegions;
-	
+
 	private String type;
-	
+
 	private String id;
-	
+
 	private String name;
-	
+
 	private String incomingTransitions;
-	
+
 	Vertices() {
 		listTransitions = new ArrayList<OutgoingTransitions>();
 		listRegions = new ArrayList<Regions>();
 		name = "";
 	}
-	
-	public int compareTo(Vertices o) {
-        return getId().compareTo(o.getId());
-    }
 
-	@XmlElement(name="outgoingTransitions")
+	public int compareTo(Vertices o) {
+		return getId().compareTo(o.getId());
+	}
+
+	@XmlElement(name = "outgoingTransitions")
 	public ArrayList<OutgoingTransitions> getListTransitions() {
 		return listTransitions;
 	}
@@ -41,7 +40,7 @@ public class Vertices implements Comparable<Vertices>{
 		this.listTransitions = listTransitions;
 	}
 
-	@XmlElement(name="regions")
+	@XmlElement(name = "regions")
 	public ArrayList<Regions> getListRegions() {
 		return listRegions;
 	}
@@ -85,12 +84,12 @@ public class Vertices implements Comparable<Vertices>{
 	public void setIncomingTransitions(String incomingTransitions) {
 		this.incomingTransitions = incomingTransitions;
 	}
-	
+
 	public void printVertices() {
-		System.out.println("Vertice "+name+":");
-		System.out.println("Type: "+type);
-		System.out.println("Id: "+id);
-		System.out.println("IncomingTransitions: "+incomingTransitions);
+		System.out.println("Vertice " + name + ":");
+		System.out.println("Type: " + type);
+		System.out.println("Id: " + id);
+		System.out.println("IncomingTransitions: " + incomingTransitions);
 		for (OutgoingTransitions out : listTransitions) {
 			out.printOutgoingTransitions();
 		}
@@ -98,5 +97,5 @@ public class Vertices implements Comparable<Vertices>{
 			r.printRegions();
 		}
 	}
-	
+
 }
