@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <Statechart id="_plnJQBdkEeeFh8rYTe7vrw" specification="interface:&#xA;out event auth&#xA;in event preUpload&#xA;in event startUpload&#xA;in event cancelUpload&#xA;in event close&#xA;&#xA;var authResult:boolean = false&#xA;var uploadResult:boolean&#xA;var authUrl:string&#xA;var totalVideos:integer&#xA;var totalVideosUploaded:integer = 0&#xA;var totalUploadErrors:integer = 0&#xA;var csvFile:string&#xA;var videoFolder:string&#xA;var video:string&#xA;var errorMsg:string&#xA;&#xA;operation authenticate(url:string):boolean&#xA;operation openPreUploadWindow():void&#xA;operation confirmCancellation():boolean&#xA;operation uploadVideo(video:string):boolean&#xA;operation checkParameters():boolean&#xA;operation getVideosCount():integer&#xA;operation showConfirmation():void&#xA;operation getCsvFile():string&#xA;operation getVideoFolder():string&#xA;operation showError(msg:string):void&#xA;operation getNextVideo():string&#xA;operation loadMetadata(csvFile:string,videoFolder:string):void&#xA;" name="default">
+  <Statechart id="_plnJQBdkEeeFh8rYTe7vrw" specification="interface:&#xA;var authResult:boolean = false&#xA;var uploadResult:boolean&#xA;var authUrl:string&#xA;var totalVideos:integer&#xA;var totalVideosUploaded:integer = 0&#xA;var totalUploadErrors:integer = 0&#xA;var csvFile:string&#xA;var videoFolder:string&#xA;var video:string&#xA;var errorMsg:string&#xA;&#xA;operation authenticate(url:string):boolean&#xA;operation openPreUploadWindow():void&#xA;operation confirmCancellation():boolean&#xA;operation uploadVideo(video:string):boolean&#xA;operation checkParameters():boolean&#xA;operation getVideosCount():integer&#xA;operation showConfirmation():void&#xA;operation getCsvFile():string&#xA;operation getVideoFolder():string&#xA;operation showError(msg:string):void&#xA;operation getNextVideo():string&#xA;operation loadMetadata(csvFile:string,videoFolder:string):void&#xA;&#xA;interface User:&#xA;out event auth&#xA;in event preUpload&#xA;in event startUpload&#xA;in event cancelUpload&#xA;in event close" name="default">
     <regions id="_DjsOoCmqEeel0oZJMzrK1Q" name="youtube_uploader">
       <vertices type="Entry" id="_Dkb1himqEeel0oZJMzrK1Q" name="Entry" >
         <outgoingTransitions id="_DkcclCmqEeel0oZJMzrK1Q" specification="" target="_DkW9ACmqEeel0oZJMzrK1Q"/>
       </vertices>
       <vertices type="State" id="_DkW9ACmqEeel0oZJMzrK1Q" specification="entry /&#xD;&#xA;csvFile = getCsvFile();&#xD;&#xA;videoFolder = getVideoFolder()" name="Idle" incomingTransitions="_DkVH1imqEeel0oZJMzrK1Q _DkUgximqEeel0oZJMzrK1Q _DkT5timqEeel0oZJMzrK1Q _DkTSpSmqEeel0oZJMzrK1Q _DkcclCmqEeel0oZJMzrK1Q">
-        <outgoingTransitions id="_DkaAVCmqEeel0oZJMzrK1Q" specification="auth" target="_DkQPYCmqEeel0oZJMzrK1Q"/>
-        <outgoingTransitions id="_DkYyMCmqEeel0oZJMzrK1Q" specification="preUpload" target="_DkECECmqEeel0oZJMzrK1Q"/>
+        <outgoingTransitions id="_DkaAVCmqEeel0oZJMzrK1Q" specification="User.auth" target="_DkQPYCmqEeel0oZJMzrK1Q"/>
+        <outgoingTransitions id="_DkYyMCmqEeel0oZJMzrK1Q" specification="User.preUpload" target="_DkECECmqEeel0oZJMzrK1Q"/>
       </vertices>
       <vertices type="State" id="_DkQPYCmqEeel0oZJMzrK1Q" specification="entry / authResult = authenticate(authUrl)" name="Auth" incomingTransitions="_DkaAVCmqEeel0oZJMzrK1Q">
         <outgoingTransitions id="_DkSEhCmqEeel0oZJMzrK1Q" specification="always" target="_DkFQMymqEeel0oZJMzrK1Q"/>
       </vertices>
       <vertices type="State" id="_DkNMACmqEeel0oZJMzrK1Q" specification="entry / loadMetadata(csvFile,videoFolder);&#xA;totalVideos = getVideosCount()" name="PreUpload" incomingTransitions="_DkLW4ymqEeel0oZJMzrK1Q">
-        <outgoingTransitions id="_DkVH1imqEeel0oZJMzrK1Q" specification="close" target="_DkW9ACmqEeel0oZJMzrK1Q"/>
-        <outgoingTransitions id="_DkPBMCmqEeel0oZJMzrK1Q" specification="startUpload" target="_Dj9UZymqEeel0oZJMzrK1Q"/>
+        <outgoingTransitions id="_DkVH1imqEeel0oZJMzrK1Q" specification="User.close" target="_DkW9ACmqEeel0oZJMzrK1Q"/>
+        <outgoingTransitions id="_DkPBMCmqEeel0oZJMzrK1Q" specification="User.startUpload" target="_Dj9UZymqEeel0oZJMzrK1Q"/>
       </vertices>
       <vertices type="FinalState" id="_DkLW4imqEeel0oZJMzrK1Q" name="FinalState" incomingTransitions="_DkKIwCmqEeel0oZJMzrK1Q _DkJhoimqEeel0oZJMzrK1Q"/>
       <vertices type="State" id="_DkITgCmqEeel0oZJMzrK1Q" specification="entry / &#xD;&#xA;showConfirmation()" name="Confirmation" incomingTransitions="_DkGeUymqEeel0oZJMzrK1Q">
-        <outgoingTransitions id="_DkKIwCmqEeel0oZJMzrK1Q" specification="close" target="_DkLW4imqEeel0oZJMzrK1Q"/>
+        <outgoingTransitions id="_DkKIwCmqEeel0oZJMzrK1Q" specification="User.close" target="_DkLW4imqEeel0oZJMzrK1Q"/>
       </vertices>
       <vertices type="Choice" id="_DkFQMymqEeel0oZJMzrK1Q" name="Choice" incomingTransitions="_DkSEhCmqEeel0oZJMzrK1Q">
         <outgoingTransitions id="_DkUgximqEeel0oZJMzrK1Q" specification="[authResult == true]" target="_DkW9ACmqEeel0oZJMzrK1Q"/>
@@ -28,10 +28,10 @@
         <outgoingTransitions id="_DkEpICmqEeel0oZJMzrK1Q" specification="else" target="_DkCM9SmqEeel0oZJMzrK1Q"/>
       </vertices>
       <vertices type="State" id="_DkCM9SmqEeel0oZJMzrK1Q" specification="entry / showError(errorMsg)" name="ErrorMessage" incomingTransitions="_DkEpICmqEeel0oZJMzrK1Q _DkA-ximqEeel0oZJMzrK1Q">
-        <outgoingTransitions id="_DkTSpSmqEeel0oZJMzrK1Q" specification="close" target="_DkW9ACmqEeel0oZJMzrK1Q"/>
+        <outgoingTransitions id="_DkTSpSmqEeel0oZJMzrK1Q" specification="User.close" target="_DkW9ACmqEeel0oZJMzrK1Q"/>
       </vertices>
       <vertices type="State" id="_Dj_wrCmqEeel0oZJMzrK1Q" specification="entry / showError(errorMsg)" name="AuthErrorMessage" incomingTransitions="_DkF3RymqEeel0oZJMzrK1Q">
-        <outgoingTransitions id="_DkT5timqEeel0oZJMzrK1Q" specification="close" target="_DkW9ACmqEeel0oZJMzrK1Q"/>
+        <outgoingTransitions id="_DkT5timqEeel0oZJMzrK1Q" specification="User.close" target="_DkW9ACmqEeel0oZJMzrK1Q"/>
       </vertices>
       <vertices type="Choice" id="_Dj9UZymqEeel0oZJMzrK1Q" name="Choice" incomingTransitions="_DkPBMCmqEeel0oZJMzrK1Q">
         <outgoingTransitions id="_DkA-ximqEeel0oZJMzrK1Q" specification="else" target="_DkCM9SmqEeel0oZJMzrK1Q"/>
@@ -39,7 +39,7 @@
       </vertices>
       <vertices type="State" id="_Dj5qFCmqEeel0oZJMzrK1Q" specification="&#xD;&#xA;entry / video = getNextVideo(); &#xD;&#xA;uploadResult = uploadVideo(video)&#xD;&#xA;" name="Upload" incomingTransitions="_Dj4b4SmqEeel0oZJMzrK1Q _Dj97dymqEeel0oZJMzrK1Q">
         <outgoingTransitions id="_Dj7fOCmqEeel0oZJMzrK1Q" specification="always" target="_DjxHICmqEeel0oZJMzrK1Q"/>
-        <outgoingTransitions id="_DkJhoimqEeel0oZJMzrK1Q" specification="cancelUpload [confirmCancellation() == true]" target="_DkLW4imqEeel0oZJMzrK1Q"/>
+        <outgoingTransitions id="_DkJhoimqEeel0oZJMzrK1Q" specification="User.cancelUpload [confirmCancellation() == true]" target="_DkLW4imqEeel0oZJMzrK1Q"/>
       </vertices>
       <vertices type="State" id="_Dj3N3imqEeel0oZJMzrK1Q" name="moreUploads?" incomingTransitions="_Dj1_pCmqEeel0oZJMzrK1Q _Dj1YnCmqEeel0oZJMzrK1Q">
         <outgoingTransitions id="_DkGeUymqEeel0oZJMzrK1Q" specification="[totalVideosUploaded + totalUploadErrors == totalVideos]" target="_DkITgCmqEeel0oZJMzrK1Q"/>

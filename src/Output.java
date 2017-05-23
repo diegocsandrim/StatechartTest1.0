@@ -72,7 +72,7 @@ public class Output {
 			for (String line : csvContent) {
 				line = line.replace(System.getProperty("line.separator"), "").replace("\n", "").replace("\r", "");
 				System.out.println(line.trim());
-				writer.append(line.trim()+"\n");
+				writer.append(line.trim().replace(",", ";")+"\n");
 			}
 				
 		    writer.flush();
