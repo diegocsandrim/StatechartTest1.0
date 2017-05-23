@@ -2,35 +2,15 @@ package model.yakindu;
 
 import java.util.ArrayList;
 
-public class State extends Vertice {
-	private String name;
-	private String childRegionId;
+public class Choice extends Vertice {
 	private ArrayList<String> incomingTransitionIdList;
 	private ArrayList<String> outgoingTransitionIdList;
 
 
-	public State(String id, String name, String parentRegionId, String childRegionId) {
+	public Choice(String id, String parentRegionId) {
 		super(id, parentRegionId);
-		this.name = name;
-		this.childRegionId = childRegionId;
 		this.incomingTransitionIdList = new ArrayList<String>();
 		this.outgoingTransitionIdList = new ArrayList<String>();
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getChildRegionId() {
-		return childRegionId;
-	}
-
-	public void setChildRegionId(String childRegionId) {
-		this.childRegionId = childRegionId;
 	}
 
 	public ArrayList<String> getincomingTransitionIdList() {

@@ -18,8 +18,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import model.yakindu.Choice;
 import model.yakindu.Entry;
 import model.yakindu.FinalState;
+import model.yakindu.Region;
 import model.yakindu.State;
 import model.yakindu.Transition;
 import model.yakindu.Vertice;
@@ -65,11 +67,17 @@ public class XMLYakinduEditor {
 	}
 
 	public void addState(State state) throws Exception {
-		Element mainRegion = this.getMainRegion();
+		Element region = this.getRegion(state.getParentRegionId());
 
 		Element verticeElement = this.createState(state);
 
-		mainRegion.appendChild(verticeElement);
+		region.appendChild(verticeElement);
+	}
+
+	private Element getRegion(String parentRegionId) {
+		Element region = findElements("regions", "xmi:id", parentRegionId).get(0);
+
+		return region;
 	}
 
 	public void addTransition(Transition transition) throws Exception {
@@ -105,7 +113,7 @@ public class XMLYakinduEditor {
 	public ArrayList<Vertice> getVerticeList() throws Exception {
 		ArrayList<Vertice> verticeList = new ArrayList<Vertice>();
 
-		Element mainRegionElement = this.getMainRegion();
+		Element mainRegionElement = this.getMainRegionElement();
 
 		NodeList verticesNodeList = mainRegionElement.getElementsByTagName("vertices");
 
@@ -120,19 +128,47 @@ public class XMLYakinduEditor {
 
 	public ArrayList<Transition> getTransitionList() throws Exception {
 		ArrayList<Transition> transitionList = new ArrayList<>();
-		Element mainRegionElement = this.getMainRegion();
+		Element mainRegionElement = this.getMainRegionElement();
 
 		NodeList outgoingTransitionNodeList = mainRegionElement.getElementsByTagName("outgoingTransitions");
 
 		for (int i = 0; i < outgoingTransitionNodeList.getLength(); i++) {
 			Element outgoingTransitionNode = (Element) outgoingTransitionNodeList.item(i);
-			Transition transition = this.buildTransition(outgoingTransitionNode);
-			transitionList.add(transition);
-		}
-		return transitionList;
+			Transition newTransition = this.buildTransition(outgoingTransitionNode);
 
+			transitionList.add(newTransition);	
+		}
+		
+		return transitionList;
 	}
 
+	public ArrayList<String> getSpecificationList() throws Exception {
+		ArrayList<String> specificationList = new ArrayList<>();
+		Element mainRegionElement = this.getMainRegionElement();
+
+		NodeList outgoingTransitionNodeList = mainRegionElement.getElementsByTagName("outgoingTransitions");
+
+		for (int i = 0; i < outgoingTransitionNodeList.getLength(); i++) {
+			Element outgoingTransitionNode = (Element) outgoingTransitionNodeList.item(i);
+			Transition newTransition = this.buildTransition(outgoingTransitionNode);
+			
+			boolean isDuplicatedSpecification = false;
+			
+			for (String alreadyAddedTransition : specificationList) {
+				if(newTransition.getSpecification().equals(alreadyAddedTransition)){
+					isDuplicatedSpecification = true;
+					break;
+				}
+			}
+			
+			if(!isDuplicatedSpecification){
+				specificationList.add(newTransition.getSpecification());	
+			}
+		}
+		
+		return specificationList;
+	}
+	
 	private Transition buildTransition(Element transitionElement) {
 		Element verticeElement = (Element) transitionElement.getParentNode();
 
@@ -145,6 +181,19 @@ public class XMLYakinduEditor {
 		Transition transition = new Transition(id, verticeId, target, specification);
 
 		return transition;
+	}
+
+	private String getParentRegionId(Element verticeNode) {
+		Element parentElement = ((Element)verticeNode.getParentNode());
+		
+		String parentRegionId;
+		
+		if(parentElement.getTagName().equals("regions")){
+			parentRegionId = parentElement.getAttribute("xmi:id");
+		}else{
+			parentRegionId = "";
+		}
+		return parentRegionId;
 	}
 
 	private Vertice buildVertice(Element verticeNode) {
@@ -162,6 +211,9 @@ public class XMLYakinduEditor {
 		case "sgraph:FinalState":
 			vertice = this.buildFinalState(verticeNode);
 			break;
+		case "sgraph:Choice":
+			vertice = this.buildChoice(verticeNode);
+			break;
 		default:
 			System.err.println(String.format("Vertice type %s is currently not supported.", type));
 			throw new NotImplementedException();
@@ -170,12 +222,40 @@ public class XMLYakinduEditor {
 		return vertice;
 	}
 
+	private Choice buildChoice(Element verticeNode) {
+		String id = verticeNode.getAttribute("xmi:id");
+		List<String> incomingTransitionIdList = Arrays
+				.asList(verticeNode.getAttribute("incomingTransitions").split(" "));
+		String parentRegionId = getParentRegionId(verticeNode);
+		
+		String childRegionId;
+
+		Choice choice = new Choice(id, parentRegionId);
+
+		for (String incomingTransition : incomingTransitionIdList) {
+			incomingTransition = incomingTransition.trim();
+
+			if (incomingTransition.equals("")) {
+				continue;
+			}
+
+			choice.getincomingTransitionIdList().add(incomingTransition);
+		}
+
+		ArrayList<String> transitionIdList = getTransitionIdList(verticeNode);
+
+		choice.getoutgoingTransitionIdList().addAll(transitionIdList);
+
+		return choice;
+	}
+
 	private FinalState buildFinalState(Element verticeNode) {
+		String parentRegionId = getParentRegionId(verticeNode);		
 		String id = verticeNode.getAttribute("xmi:id");
 		List<String> incomingTransitionIdList = Arrays
 				.asList(verticeNode.getAttribute("incomingTransitions").split(" "));
 	
-		FinalState state = new FinalState(id);
+		FinalState state = new FinalState(id, parentRegionId);
 	
 		for (String incomingTransition : incomingTransitionIdList) {
 			incomingTransition = incomingTransition.trim();
@@ -195,8 +275,17 @@ public class XMLYakinduEditor {
 		String name = verticeNode.getAttribute("name");
 		List<String> incomingTransitionIdList = Arrays
 				.asList(verticeNode.getAttribute("incomingTransitions").split(" "));
+		String parentRegionId = getParentRegionId(verticeNode);
+		
+		String childRegionId;
+		NodeList nodeList = verticeNode.getElementsByTagName("regions");
+		if(nodeList.getLength() == 0){
+			childRegionId = "";
+		}else{
+			childRegionId = ((Element)nodeList.item(0)).getAttribute("xmi:id"); 
+		}
 
-		State state = new State(id, name);
+		State state = new State(id, name, parentRegionId, childRegionId);
 
 		for (String incomingTransition : incomingTransitionIdList) {
 			incomingTransition = incomingTransition.trim();
@@ -217,8 +306,9 @@ public class XMLYakinduEditor {
 
 	private Entry buildEntry(Element verticeNode) {
 		String id = verticeNode.getAttribute("xmi:id");
-
-		Entry entry = new Entry(id);
+		String parentRegionId = getParentRegionId(verticeNode);
+		
+		Entry entry = new Entry(id, parentRegionId);
 
 		ArrayList<String> transitionIdList = getTransitionIdList(verticeNode);
 
@@ -263,11 +353,64 @@ public class XMLYakinduEditor {
 		return transitionElement;
 	}
 
-	private Element getMainRegion() {
+	public Region getMainRegion() {
 		Element rootElement = document.getDocumentElement();
 		Element statechartElement = (Element) rootElement.getElementsByTagName("sgraph:Statechart").item(0);
 		Element mainRegionElement = (Element) statechartElement.getElementsByTagName("regions").item(0);
+		
+		String id = mainRegionElement.getAttribute("xmi:id");
+		String name = mainRegionElement.getAttribute("name");
+		
+		Region region = new Region(id, name);
 
+		return region;
+	}
+
+	public Element getMainRegionElement() {
+		Element rootElement = document.getDocumentElement();
+		Element statechartElement = (Element) rootElement.getElementsByTagName("sgraph:Statechart").item(0);
+		Element mainRegionElement = (Element) statechartElement.getElementsByTagName("regions").item(0);
+		
 		return mainRegionElement;
+	}
+	
+	public ArrayList<String> getParentStateOutgoingTransitionIdList(String stateId){
+		Element stateElement = this.findElements("vertices", "xmi:id", stateId).get(0);
+		
+		ArrayList<String> parentStateOutgoingTransitionIdList = new ArrayList<>();
+		
+		Element parentRegionElement = (Element)stateElement.getParentNode();
+		String parentRegionId = parentRegionElement.getAttribute("xmi:id"); 
+		Region mainRegion = this.getMainRegion();
+		
+		if(parentRegionId.equals(mainRegion.getId())){
+			return parentStateOutgoingTransitionIdList;
+		}
+		
+		Element parentStateElement = (Element)parentRegionElement.getParentNode();
+		
+		NodeList parentStateChildNodeList = parentStateElement.getChildNodes();
+		
+		for (int i = 0; i < parentStateChildNodeList.getLength(); i++) {
+			if(parentStateChildNodeList.item(i).getNodeType() != 1){
+				continue;
+			}
+			
+			Element childElement = (Element)parentStateChildNodeList.item(i);
+			
+			if(!childElement.getTagName().equals("outgoingTransitions")){
+				continue;
+			}
+			
+			String outgoingTransitionId = childElement.getAttribute("xmi:id");
+			
+			parentStateOutgoingTransitionIdList.add(outgoingTransitionId);
+		}
+		
+		String parentStateElementId = parentStateElement.getAttribute("xmi:id");
+		ArrayList<String> parents = getParentStateOutgoingTransitionIdList(parentStateElementId);
+		parentStateOutgoingTransitionIdList.addAll(parents);
+		
+		return parentStateOutgoingTransitionIdList;
 	}
 }

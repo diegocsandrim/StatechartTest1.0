@@ -191,8 +191,13 @@ public class TestGenerator {
 					testPaths.add(testPath);
 					out.printRow(state.getName(), outTrans.getSpecification(), testPath,
 							sc.statesId.get(outTrans.getTarget()).getName());
-					csvLines.add(state.getName() + "," + outTrans.getSpecification() + "," + testPath + ","
-							+ sc.statesId.get(outTrans.getTarget()).getName());
+					String normalizedName = state.getName().trim();
+					String normalizedSpecification = outTrans.getSpecification().trim().replace("\r\n", " ").replace("\n", " ");
+					String normalizedTestPath = testPath.trim().replace("\r\n", " ").replace("\n", " ");
+					String normalizedTargetName = sc.statesId.get(outTrans.getTarget()).getName().trim();
+					String line =normalizedName + "," + normalizedSpecification + "," + normalizedTestPath + ","
+							+ normalizedTargetName; 
+					csvLines.add(line);
 				}
 			}
 		}

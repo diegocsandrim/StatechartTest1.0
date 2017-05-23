@@ -21,6 +21,7 @@ import xml.handler.XMLYakinduEditor;
 public class XMLYakinduEditorTests {
 	private String sourcePath = "resources\\Simple.sct";
 	private String targetPath = "resources\\test-output\\test.sct";
+	private String hierarchySourcePath = "resources\\Hierarchy.sct";
 
 	@Before
 	public void before() {
@@ -104,7 +105,7 @@ public class XMLYakinduEditorTests {
 	@Test
 	public void addState() throws Exception {
 		XMLYakinduEditor editor = new XMLYakinduEditor(sourcePath);
-		State state = new State("custom_id", "fault");
+		State state = new State("custom_id", "fault", "_2XMVIjX_EeePhbNkQZRfzQ", "");
 		editor.addState(state);
 
 		ArrayList<Vertice> verticeList = editor.getVerticeList();
@@ -151,5 +152,18 @@ public class XMLYakinduEditorTests {
 		assertEquals(targetState.getoutgoingTransitionIdList().size(), 1);
 		assertEquals(targetState.getincomingTransitionIdList().size(), 2);
 		assertEquals(targetState.getincomingTransitionIdList().get(1), "custom_id");
+	}
+
+	@Test
+	public void getParentStateOutgoingTransitionIdList() throws Exception {
+		XMLYakinduEditor editor = new XMLYakinduEditor(hierarchySourcePath);
+		
+		ArrayList<String> outgoing = editor.getParentStateOutgoingTransitionIdList("_iua5MD0aEeezT6DJfC1Xng");
+		
+		assertEquals(outgoing.size(), 2);
+		
+		assertEquals(outgoing.contains("_bIV4rD0aEeezT6DJfC1Xng"), true);
+		assertEquals(outgoing.contains("_iTHD4DtyEee2dJCkaKsgEw"), true);
+
 	}
 }

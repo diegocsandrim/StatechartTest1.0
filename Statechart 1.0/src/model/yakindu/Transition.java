@@ -6,6 +6,10 @@ public class Transition {
 	private String targetVerticeId;
 	private String specification;
 
+	public Transition(String id) {
+		this(id, null, null, null);
+	}
+	
 	public Transition(String id, String sourceVerticeId, String targetVerticeId, String specification) {
 		super();
 		this.id = id;
@@ -44,5 +48,22 @@ public class Transition {
 
 	public void setSpecification(String specification) {
 		this.specification = specification;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.id.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null)
+			return false;
+		
+		if(obj.getClass().getName() != Transition.class.getName()){
+			return false;
+		}
+		
+		return ((Transition)obj).getId().equals(this.id);
 	}
 }

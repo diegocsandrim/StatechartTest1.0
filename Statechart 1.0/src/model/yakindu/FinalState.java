@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class FinalState extends Vertice {
 	private ArrayList<String> incomingTransitionIdList;
 
-	public FinalState(String id) {
-		super(id);
+	public FinalState(String id, String parentRegionId) {
+		super(id, parentRegionId);
 		this.incomingTransitionIdList = new ArrayList<>();
 	}
 

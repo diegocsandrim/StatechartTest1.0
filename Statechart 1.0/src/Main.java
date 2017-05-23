@@ -18,6 +18,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import org.w3c.dom.Element;
+
 import model.yakindu.*;
 import xml.handler.XMLProcessor;
 import xml.handler.XMLYakinduEditor;
@@ -128,9 +130,13 @@ public class Main {
 		File statechartWithErrorStateFile = new File(filePath + "-with-error.sct");
 	
 		XMLYakinduEditor editor = new XMLYakinduEditor(filePath);
-		ArrayList<Transition> transitionlist = editor.getTransitionList();
+		
+		Region mainRegion = editor.getMainRegion();
+		
+		ArrayList<String> specificationList = editor.getSpecificationList();
+		ArrayList<Transition> transitionList = editor.getTransitionList();
 		ArrayList<Vertice> verticelist = editor.getVerticeList();
-		State errorState = new State(Vertice.createId(), "ErrorState");
+		State errorState = new State(Vertice.createId(), "ErrorState", mainRegion.getId(), "");
 		
 		ArrayList<Transition> transitionListToAdd = new ArrayList<>();
 		
@@ -139,23 +145,39 @@ public class Main {
 			if (vertice.getClass().getName() != State.class.getName()) {
 				continue;
 			}
+			
 			State state = (State)vertice;
 			
-			for (Transition transition : transitionlist) {
+			//Skip composite state we do it in simple states
+			if(!state.getChildRegionId().equals("")){
+				continue;
+			}
+
+			
+			for (String specification : specificationList) {
 				// Skip always transition
-				if(transition.getSpecification().equals("") || transition.getSpecification().equals("always")){
+				if(specification.equals("") || specification.equals("always")){
 					continue;
 				}
 				
-				if (state.getoutgoingTransitionIdList().contains(transition.getId())) {
+				// Ignore transitions present in state
+				if (stateContainsSpecification(transitionList, state.getoutgoingTransitionIdList(), specification)) {
 					continue;
 				}
 				
+				// Ignore transitions present in parent states
+				ArrayList<String> parentStateOutgoingTransitionIdList = editor.getParentStateOutgoingTransitionIdList(state.getId());
+				if(stateContainsSpecification(transitionList, parentStateOutgoingTransitionIdList, specification)){
+					continue;
+				}
+				
+				// TODO: Yakindu is not showing transitions from inner state to state out of parent state
+				// Maybe it needs some kind of reference is design part of XML
 				Transition errorTransition = new Transition(
 						Vertice.createId(),
 						vertice.getId(),
 						errorState.getId(),
-						transition.getSpecification());
+						specification);
 				
 				transitionListToAdd.add(errorTransition);
 
@@ -171,6 +193,27 @@ public class Main {
 		editor.save(statechartWithErrorStateFile.getPath());
 		
 		return statechartWithErrorStateFile.getPath();
+	}
+	
+	private boolean stateContainsSpecification(ArrayList<Transition> allTransitions, ArrayList<String> stateTransitionIdList, String specifiation){
+		Transition transition = null;
+		for (String stateTransitionId : stateTransitionIdList) {			
+			for (Transition checkTransition : allTransitions) {
+				if(checkTransition.getId().equals(stateTransitionId)){
+					transition = checkTransition;
+					break;
+				}
+			}
+			
+			if (transition != null && transition.getSpecification().equals(specifiation)){
+				return true;
+			}
+			
+		}
+		
+		
+		return false;
+		
 	}
 
 	// action for the open button

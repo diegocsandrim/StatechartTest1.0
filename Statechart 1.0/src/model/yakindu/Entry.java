@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Entry extends Vertice {
 	private ArrayList<String> outgoingTransitionIdList;
 
-	public Entry(String id) {
-		super(id);
+	public Entry(String id, String parentRegionId) {
+		super(id, parentRegionId);
 		this.outgoingTransitionIdList = new ArrayList<>();
 	}
 
