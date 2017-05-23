@@ -3,6 +3,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
@@ -18,7 +19,12 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
+import model.yakindu.Region;
+import model.yakindu.State;
+import model.yakindu.Transition;
+import model.yakindu.Vertice;
 import xml.handler.XMLProcessor;
+import xml.handler.XMLYakinduEditor;
 import xml.statechart.Statechart;
 
 public class Main {
@@ -26,8 +32,8 @@ public class Main {
 	public enum Criteria{
 		ALL_PATHS("all paths"),
 		ALL_STATES("all states"),
-		ALL_TRANSITIONS("all transitions");
-		
+		ALL_TRANSITIONS("all transitions"),
+		ALL_TRANSITIONS_WITH_FAULTS("all transitions with faults");
 		
 		private final String text;
 		private Criteria(final String text) {
@@ -79,9 +85,16 @@ public class Main {
 
 	//action for the create test cases button
 	private void actionCreateTestCases_AllTransitions() {				
-		XMLProcessor xml = new XMLProcessor();
+		this.cleanTable();
+		
 		String filePath = selectedFile.getText();
+		String[] aux = selectedFile.getText().split("\\\\");
+		
+		XMLProcessor xml = new XMLProcessor();
 		xml.createXmlFromYakindu(filePath);
+								
+		out.printRow("Selected File: " + aux[aux.length-1], "", "", "");
+		out.printRow("Test Criteria: All Transitions", "", "", "");
 		
 		try {
 			long startTime = System.currentTimeMillis();			
@@ -94,17 +107,131 @@ public class Main {
 			
 			long endTime = System.currentTimeMillis();
 			long duration = endTime - startTime;			
-			
-			
-			System.out.println("Execution Time: " + duration + " miliseconds");
-			stats.setText(stats.getText() + " | Execution Time: " + duration + " miliseconds" );
-			stats.setVisible(true);
+			this.writeExecutionStatistics(duration);	
 		} catch(Exception ex) {
 			JOptionPane.showMessageDialog(null, "An error occurred while generating test cases. "
 					+ "Check for errors in your Yakindu SCT statechart file or maybe we can't help you. Sorry :(", "Error", JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
 		}
 	}
+	
+	// action for the create test cases button
+		private void actionCreateTestCases_AllTransitionsWithFaults() {
+			this.cleanTable();
+			
+			String filePath = selectedFile.getText();					
+			String[] aux = selectedFile.getText().split("\\\\");
+			
+			out.printRow("Selected File: " + aux[aux.length-1], "", "", "");
+			out.printRow("Test Criteria: All Transitions With Fault", "", "", "");
+			
+			try {
+				String statechartWithErrorStateFile = generateStatechartWithFaultTransitions(filePath);				
+				XMLProcessor xml = new XMLProcessor();
+				
+				String output = xml.createXmlFromYakindu(statechartWithErrorStateFile);
+				long startTime = System.currentTimeMillis();
+				Statechart statechart = xml.createStatechartFromXml(output);
+				statechart.constructStateIdHash();
+				TestGenerator tg = new TestGenerator(statechart);
+				testPaths = tg.createTestPaths();
+				csvLines = tg.csvLines;
+				
+				long endTime = System.currentTimeMillis();
+				long duration = endTime - startTime;											
+				this.writeExecutionStatistics(duration);
+				
+				JOptionPane.showMessageDialog(null, "These results refers to a new statechart file with faulty outgoing transitions"
+						+ "\nthat we created in the same directory of your original statechart file. Check it out!", "Faulty Transitions Coverage Criteria", JOptionPane.INFORMATION_MESSAGE);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		private String generateStatechartWithFaultTransitions(String filePath) throws Exception {
+			File statechartWithErrorStateFile = new File(filePath.replace(".sct", "") + "-with-error.sct");
+		
+			XMLYakinduEditor editor = new XMLYakinduEditor(filePath);
+			
+			Region mainRegion = editor.getMainRegion();
+			
+			ArrayList<String> specificationList = editor.getSpecificationList();
+			ArrayList<Transition> transitionList = editor.getTransitionList();
+			ArrayList<Vertice> verticelist = editor.getVerticeList();
+			State errorState = new State(Vertice.createId(), "ErrorState", mainRegion.getId(), "");
+			
+			ArrayList<Transition> transitionListToAdd = new ArrayList<>();
+			
+			for (Vertice vertice : verticelist) {
+				// Skip non state vertices
+				if (vertice.getClass().getName() != State.class.getName()) {
+					continue;
+				}
+				
+				State state = (State)vertice;
+				
+				//Skip composite state we do it in simple states
+				if(!state.getChildRegionId().equals("")){
+					continue;
+				}
+
+				
+				for (String specification : specificationList) {
+					// Skip always transition
+					if(specification.equals("") || specification.equals("always")){
+						continue;
+					}
+					
+					// Ignore transitions present in state
+					if (stateContainsSpecification(transitionList, state.getoutgoingTransitionIdList(), specification)) {
+						continue;
+					}
+					
+					// Ignore transitions present in parent states
+					ArrayList<String> parentStateOutgoingTransitionIdList = editor.getParentStateOutgoingTransitionIdList(state.getId());
+					if(stateContainsSpecification(transitionList, parentStateOutgoingTransitionIdList, specification)){
+						continue;
+					}
+					
+					// TODO: Yakindu is not showing transitions from inner state to state out of parent state
+					// Maybe it needs some kind of reference in design part of XML
+					Transition errorTransition = new Transition(
+							Vertice.createId(),
+							vertice.getId(),
+							errorState.getId(),
+							specification);
+					
+					transitionListToAdd.add(errorTransition);
+
+				}
+			}
+			
+			editor.addState(errorState);
+			
+			for (Transition transition : transitionListToAdd) {
+				editor.addTransition(transition);
+			}
+
+			editor.save(statechartWithErrorStateFile.getPath());
+			
+			return statechartWithErrorStateFile.getPath();
+		}
+		
+		private boolean stateContainsSpecification(ArrayList<Transition> allTransitions, ArrayList<String> stateTransitionIdList, String specifiation){
+			Transition transition = null;
+			for (String stateTransitionId : stateTransitionIdList) {			
+				for (Transition checkTransition : allTransitions) {
+					if(checkTransition.getId().equals(stateTransitionId)){
+						transition = checkTransition;
+						break;
+					}
+				}				
+				if (transition != null && transition.getSpecification().equals(specifiation)){
+					return true;
+				}				
+			}						
+			return false;			
+		}
 	
 	//action for the open button
 	private void actionOpenStatechartButton() {
@@ -163,6 +290,25 @@ public class Main {
 	 	return null;
 	}
 	
+	private void writeExecutionStatistics(long duration) {
+		System.out.println("Execution Time: " + duration + " miliseconds");
+		stats.setText("Last Execution: " + stats.getText() + " | Processing Time: " + duration + " miliseconds" );
+		stats.setVisible(true);
+	}
+	
+	public void cleanTable() {		
+		if(model.getRowCount() > 2) {
+			int option = JOptionPane.showConfirmDialog(null, "Do you want to clean all previous results?", "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if(option == 0) { //yes
+				while( model.getRowCount() > 0 ){
+			        model.removeRow(0);
+			    }
+			} else {
+				out.printRow("", "", "", "");
+			}
+		}			
+	}
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -203,10 +349,10 @@ public class Main {
 		btnCreateTestCases.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(selectedFile.getText() == null || selectedFile.getText().equals("")) {
-					JOptionPane.showMessageDialog(null, "Please open your Yakindu Statechart file!", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Please open your Yakindu statechart file (.sct)!", "Error", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				
+										
 				switch (coverage){
 					case ALL_PATHS:
 							//System.out.println("Creating Test Cases for All Paths Coverage Criteria");
@@ -219,6 +365,10 @@ public class Main {
 					case ALL_TRANSITIONS:
 							System.out.println("Creating Test Cases for All Transitions Coverage Criteria");
 							actionCreateTestCases_AllTransitions();
+							break;	
+					case ALL_TRANSITIONS_WITH_FAULTS:
+							System.out.println("Creating Test for All Transitions With Faults Coverage Criteria");
+							actionCreateTestCases_AllTransitionsWithFaults();
 							break;	
 				}
 			}
@@ -242,7 +392,7 @@ public class Main {
 		lblCriteria.setFont(new Font("Arial", Font.PLAIN, 12));
 		frame.getContentPane().add(lblCriteria);
 		
-		String[] criteriaList = { Criteria.ALL_PATHS.getText(), Criteria.ALL_TRANSITIONS.getText(), Criteria.ALL_STATES.getText()};
+		String[] criteriaList = { Criteria.ALL_TRANSITIONS.getText(), Criteria.ALL_TRANSITIONS_WITH_FAULTS.getText(), Criteria.ALL_STATES.getText(), Criteria.ALL_PATHS.getText()};
 		JComboBox<String> testCriteriaList = new JComboBox<>(criteriaList);
 		testCriteriaList.setFont(new Font("Arial", Font.PLAIN, 12));
 
@@ -259,9 +409,12 @@ public class Main {
 				if (criteria.compareToIgnoreCase(Criteria.ALL_TRANSITIONS.getText())==0){
 					Main.this.coverage=Criteria.ALL_TRANSITIONS;
 				} 
+				if (criteria.compareToIgnoreCase(Criteria.ALL_TRANSITIONS_WITH_FAULTS.getText()) == 0) {
+					Main.this.coverage = Criteria.ALL_TRANSITIONS_WITH_FAULTS;
+				}
 			}			
 		});
-		testCriteriaList.setSelectedIndex(1);
+		testCriteriaList.setSelectedIndex(0);
 		frame.getContentPane().add(testCriteriaList);
 		
 		JButton btnOpenStatechart = new JButton("Open Statechart");

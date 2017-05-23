@@ -3,39 +3,18 @@ import java.io.IOException;
 import java.util.Set;
 
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 
 public class Output {
 
-	private JTextArea textArea;
-	
 	//The table to which we are printing the output
 	private JTable table;
 
-	Output(JTextArea ta) {
-		textArea = ta;
-	}
-	
 	Output(JTable table) {
 		this.table = table;
 	}
-	
-	public void println(String str) {
-		textArea.append(str+"\n");
-	}
-	
-	public void clear() {
-		textArea.setText(null);
-	}
-	
-	public void cleanTable() {
-		while( Main.model.getRowCount() > 0 ){
-	        Main.model.removeRow(0);
-	    }
-	}
-	
+			
 	//Prints a row in the table
 	public void printRow(String state, String transition, String path, String expected) {
 		DefaultTableModel myModel = (DefaultTableModel) table.getModel();
@@ -71,7 +50,7 @@ public class Output {
 		    writer.append("State,Transition,Test Path,Expected State\n");
 			for (String line : csvContent) {
 				line = line.replace(System.getProperty("line.separator"), "").replace("\n", "").replace("\r", "");
-				System.out.println(line.trim());
+				//System.out.println(line.trim());
 				writer.append(line.trim().replace(",", ";")+"\n");
 			}
 				

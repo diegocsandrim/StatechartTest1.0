@@ -178,16 +178,16 @@ public class TestGenerator {
 	 }
 	 
 	//Create the test cases
-	public Set<String> generateTestCases(Set<TestComponent> tcSet) {
-		out.cleanTable();
+	public Set<String> generateTestCases(Set<TestComponent> tcSet) {					
 		Set<String> testPaths = new TreeSet<String>();
 		int testCasesCount=0;
 		int transitionCount=0;
+		
 		for (TestComponent tc : tcSet) {
 			Vertices state = tc.atingido;
 			for (OutgoingTransitions outTrans : state.getListTransitions()) {
 				if (outTrans.getSpecification() != null) {
-					testCasesCount=testCasesCount+1;
+					testCasesCount++;
 					transitionCount=transitionCount+tc.sequenciaCobertura.trim().split(" ").length;
 					String testPath = tc.sequenciaCobertura+" "+outTrans.getSpecification();
 					testPaths.add(testPath);
@@ -199,8 +199,9 @@ public class TestGenerator {
 		System.out.println("Number of test cases: "+ testCasesCount);
 		System.out.println("Number of transitions: "+ transitionCount);
 		
-		Main.stats.setText("Test case: "+ testCasesCount + " | " +
-				"Transitions: "+ transitionCount);
+		String stats = "Test cases: "+ testCasesCount + " | " + "Transitions: "+ transitionCount;
+		out.printRow(stats, "", "", "");
+		Main.stats.setText(stats);
 		
 		return testPaths;
 	}
