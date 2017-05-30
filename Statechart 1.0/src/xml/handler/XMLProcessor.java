@@ -19,7 +19,6 @@ public class XMLProcessor {
 		
 		boolean done = false;
 		String type = "";
-		String injectName = " name=";
 		String region = "";
 		try {
 			PrintWriter writer = new PrintWriter(output, "UTF-8");

@@ -18,8 +18,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import org.w3c.dom.Element;
-
 import model.yakindu.*;
 import xml.handler.XMLProcessor;
 import xml.handler.XMLYakinduEditor;

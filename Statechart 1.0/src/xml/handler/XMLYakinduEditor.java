@@ -228,8 +228,6 @@ public class XMLYakinduEditor {
 				.asList(verticeNode.getAttribute("incomingTransitions").split(" "));
 		String parentRegionId = getParentRegionId(verticeNode);
 		
-		String childRegionId;
-
 		Choice choice = new Choice(id, parentRegionId);
 
 		for (String incomingTransition : incomingTransitionIdList) {
