@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 public class State extends Vertice {
 	private String name;
-	private String childRegionId;
+	private ArrayList<String> childRegionIdList;
 	private ArrayList<String> incomingTransitionIdList;
 	private ArrayList<String> outgoingTransitionIdList;
 
 
-	public State(String id, String name, String parentRegionId, String childRegionId) {
+	public State(String id, String name, String parentRegionId) {
 		super(id, parentRegionId);
 		this.name = name;
-		this.childRegionId = childRegionId;
+		this.childRegionIdList = new ArrayList<String>();
 		this.incomingTransitionIdList = new ArrayList<String>();
 		this.outgoingTransitionIdList = new ArrayList<String>();
 	}
@@ -25,12 +25,8 @@ public class State extends Vertice {
 		this.name = name;
 	}
 
-	public String getChildRegionId() {
-		return childRegionId;
-	}
-
-	public void setChildRegionId(String childRegionId) {
-		this.childRegionId = childRegionId;
+	public ArrayList<String> getChildRegionIdList() {
+		return childRegionIdList;
 	}
 
 	public ArrayList<String> getincomingTransitionIdList() {

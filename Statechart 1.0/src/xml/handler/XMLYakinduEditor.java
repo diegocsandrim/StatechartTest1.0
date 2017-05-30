@@ -3,6 +3,7 @@ package xml.handler;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -67,14 +68,14 @@ public class XMLYakinduEditor {
 	}
 
 	public void addState(State state) throws Exception {
-		Element region = this.getRegion(state.getParentRegionId());
+		Element region = this.getRegionElement(state.getParentRegionId());
 
 		Element verticeElement = this.createState(state);
 
 		region.appendChild(verticeElement);
 	}
 
-	private Element getRegion(String parentRegionId) {
+	private Element getRegionElement(String parentRegionId) {
 		Element region = findElements("regions", "xmi:id", parentRegionId).get(0);
 
 		return region;
@@ -275,16 +276,21 @@ public class XMLYakinduEditor {
 				.asList(verticeNode.getAttribute("incomingTransitions").split(" "));
 		String parentRegionId = getParentRegionId(verticeNode);
 		
-		String childRegionId;
 		NodeList nodeList = verticeNode.getElementsByTagName("regions");
-		if(nodeList.getLength() == 0){
-			childRegionId = "";
-		}else{
-			childRegionId = ((Element)nodeList.item(0)).getAttribute("xmi:id"); 
+		
+		State state = new State(id, name, parentRegionId);
+		
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Element element = (Element)nodeList.item(i);
+			String childRegionId = element.getAttribute("xmi:id").trim();
+			
+			if(childRegionId.equals("")){
+				continue;
+			}
+			
+			state.getChildRegionIdList().add(childRegionId);
 		}
-
-		State state = new State(id, name, parentRegionId, childRegionId);
-
+		
 		for (String incomingTransition : incomingTransitionIdList) {
 			incomingTransition = incomingTransition.trim();
 
@@ -315,6 +321,44 @@ public class XMLYakinduEditor {
 		return entry;
 	}
 
+	public Region buildRegion(Element regionNode) {
+		String id = regionNode.getAttribute("xmi:id");
+		String name = regionNode.getAttribute("name");
+		//String parentRegionId = getParentRegionId(verticeNode); parentState?
+		
+		//NodeList nodeList = verticeNode.getElementsByTagName("regions"); verticeList?
+		
+		Region region = new Region(id, name);
+		
+//		
+//		for (int i = 0; i < nodeList.getLength(); i++) {
+//			Element element = (Element)nodeList.item(i);
+//			String childRegionId = element.getAttribute("xmi:id").trim();
+//			
+//			if(childRegionId.equals("")){
+//				continue;
+//			}
+//			
+//			state.getChildRegionIdList().add(childRegionId);
+//		}
+//		
+//		for (String incomingTransition : incomingTransitionIdList) {
+//			incomingTransition = incomingTransition.trim();
+//
+//			if (incomingTransition.equals("")) {
+//				continue;
+//			}
+//
+//			state.getincomingTransitionIdList().add(incomingTransition);
+//		}
+//
+//		ArrayList<String> transitionIdList = getTransitionIdList(verticeNode);
+//
+//		state.getoutgoingTransitionIdList().addAll(transitionIdList);
+
+		return region;
+	}
+	
 	private ArrayList<String> getTransitionIdList(Element verticeNode) {
 		ArrayList<String> transitionIdList = new ArrayList<>();
 
@@ -410,5 +454,75 @@ public class XMLYakinduEditor {
 		parentStateOutgoingTransitionIdList.addAll(parents);
 		
 		return parentStateOutgoingTransitionIdList;
+	}
+
+	public boolean isSpecidicationInConcurrentRegion(String stateId, String specification) {
+		Element currentStateElement = this.findElements("vertices", "xmi:id", stateId).get(0);
+		Element currentRegionElement = (Element)currentStateElement.getParentNode();
+		Element parentStateElement = (Element)currentRegionElement.getParentNode();
+		
+		if(parentStateElement.getTagName().equals("sgraph:Statechart")){
+			return false;
+		}
+		
+		NodeList regionNodeList = parentStateElement.getChildNodes();
+		
+		for (int i = 0; i < regionNodeList.getLength(); i++) {
+			if(regionNodeList.item(i).getNodeType() != 1){
+				continue;
+			}
+			
+			Element childElement = (Element)regionNodeList.item(i);
+			
+			if(!childElement.getTagName().equals("regions")){
+				continue;
+			}
+			
+			Element parallelRegion = childElement;
+			
+			//Skip if is the same region the state is in.
+			if(parallelRegion.getAttribute("xmi:id").trim().equals(currentRegionElement.getAttribute("xmi:id").trim())){
+				continue;
+			}
+			
+			NodeList parallelRegionVerticeNodeList = parallelRegion.getChildNodes();
+			
+			for (int j = 0; j < parallelRegionVerticeNodeList.getLength(); j++) {
+				if(parallelRegionVerticeNodeList.item(j).getNodeType() != 1){
+					continue;
+				}
+				
+				Element parallelVerticeElement = (Element)parallelRegionVerticeNodeList.item(j);
+				
+				if(!parallelVerticeElement.getAttribute("xsi:type").trim().equals("sgraph:State")){
+					continue;
+				}
+				
+				Element parallelStateElement = parallelVerticeElement;
+				//Check the outgoing transitions
+				
+				NodeList parallelStateOutgoingTransitionNodeList = parallelStateElement.getChildNodes();
+
+				for (int k = 0; k < parallelStateOutgoingTransitionNodeList.getLength(); k++) {
+					if(parallelStateOutgoingTransitionNodeList.item(k).getNodeType() != 1){
+						continue;
+					}
+					
+					Element parallelStateChildElement = (Element)parallelStateOutgoingTransitionNodeList.item(k);
+					
+					if(!parallelStateChildElement.getTagName().equals("outgoingTransitions")){
+						continue;
+					}
+					
+					Element parallelOutgoingTransitionsElement = parallelStateChildElement;
+					
+					if(parallelOutgoingTransitionsElement.getAttribute("specification").equals(specification)){
+						return true; //find !!!
+					}
+				}
+			}			
+		}
+		
+		return false;
 	}
 }

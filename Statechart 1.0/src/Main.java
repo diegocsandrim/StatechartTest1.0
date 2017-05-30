@@ -134,7 +134,7 @@ public class Main {
 		ArrayList<String> specificationList = editor.getSpecificationList();
 		ArrayList<Transition> transitionList = editor.getTransitionList();
 		ArrayList<Vertice> verticelist = editor.getVerticeList();
-		State errorState = new State(Vertice.createId(), "ErrorState", mainRegion.getId(), "");
+		State errorState = new State(Vertice.createId(), "ErrorState", mainRegion.getId());
 		
 		ArrayList<Transition> transitionListToAdd = new ArrayList<>();
 		
@@ -147,10 +147,9 @@ public class Main {
 			State state = (State)vertice;
 			
 			//Skip composite state we do it in simple states
-			if(!state.getChildRegionId().equals("")){
+			if(state.getChildRegionIdList().size() != 0){
 				continue;
 			}
-
 			
 			for (String specification : specificationList) {
 				// Skip always transition
@@ -169,6 +168,13 @@ public class Main {
 					continue;
 				}
 				
+
+				// Ignore transitions present in other parallel regions that can be executed simultaneous to this
+				if(editor.isSpecidicationInConcurrentRegion(state.getId(), specification))
+				{
+					continue;
+				}
+								
 				// TODO: Yakindu is not showing transitions from inner state to state out of parent state
 				// Maybe it needs some kind of reference is design part of XML
 				Transition errorTransition = new Transition(

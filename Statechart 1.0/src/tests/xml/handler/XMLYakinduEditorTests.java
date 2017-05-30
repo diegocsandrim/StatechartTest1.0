@@ -105,7 +105,7 @@ public class XMLYakinduEditorTests {
 	@Test
 	public void addState() throws Exception {
 		XMLYakinduEditor editor = new XMLYakinduEditor(sourcePath);
-		State state = new State("custom_id", "fault", "_2XMVIjX_EeePhbNkQZRfzQ", "");
+		State state = new State("custom_id", "fault", "_2XMVIjX_EeePhbNkQZRfzQ");
 		editor.addState(state);
 
 		ArrayList<Vertice> verticeList = editor.getVerticeList();
